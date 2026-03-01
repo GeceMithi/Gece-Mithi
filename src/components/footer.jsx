@@ -84,7 +84,7 @@ const Footer = ({ setContentType }) => {
                             </div>
                             <div className="flex items-start">
                                 <span className="text-[#FFD700] mr-3 mt-1 text-lg">✉️</span>
-                                <span className="hover:text-white cursor-pointer">info@gecemithi.edu.pk</span>
+                                <span className="hover:text-white cursor-pointer">gecemithiedu@gmail.com</span>
                             </div>
                         </div>
                     </div>
