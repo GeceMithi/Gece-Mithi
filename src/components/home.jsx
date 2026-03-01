@@ -140,37 +140,55 @@ const Home = ({ setContentType }) => {
                                             {/* Date Badge */}
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center text-[10px] font-bold text-[#004d00] bg-green-100 w-fit px-2 py-1 rounded">
-                                                    <Icons.Calendar /> <span className="ml-1">{notice.date}</span>
+                                                    <Icons.Calendar /> <span className="ml-1">{notice.createdAt?.toDate?.() ? 
+                                                        new Date(notice.createdAt.toDate()).toLocaleDateString() : 
+                                                        new Date(notice.createdAt?.toMillis?.() || notice.createdAt).toLocaleDateString()
+                                                    }</span>
                                                 </div>
                                                 {index < 2 && <span className="text-[9px] text-white bg-red-500 px-2 py-0.5 rounded-full font-bold animate-pulse">NEW</span>}
                                             </div>
 
+                                            {/* Title */}
+                                            <h4 className="font-bold text-[#004d00] text-lg mb-2">{notice.title}</h4>
+
                                             {/* Text */}
-                                            <p className="text-gray-800 text-sm font-medium leading-relaxed whitespace-pre-line">
-                                                {notice.text}
+                                            <p className="text-gray-800 text-sm font-medium leading-relaxed whitespace-pre-line mb-3">
+                                                {notice.content}
                                             </p>
 
-                                            {/* Attachment Display */}
-                                            {notice.fileUrl && (
+                                            {/* PDF Attachment Display */}
+                                            {notice.pdfData && (
                                                 <div className="mt-3 pt-3 border-t border-dashed border-[#ffd200]">
-                                                    {notice.fileType === 'image' ? (
-                                                        <div className="rounded-lg overflow-hidden border border-[#ffd200]">
-                                                            <img 
-                                                                src={convertDriveLink(notice.fileUrl) || notice.fileUrl} 
-                                                                alt="Attachment" 
-                                                                className="w-full h-auto max-h-[200px] object-contain bg-black/5"
-                                                            />
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center">
+                                                            <Icons.File className="w-4 h-4 mr-2 text-[#004d00]" />
+                                                            <span className="text-xs text-gray-600">
+                                                                PDF: {notice.pdfFileName}
+                                                            </span>
                                                         </div>
-                                                    ) : (
                                                         <a 
-                                                            href={convertDriveLink(notice.fileUrl) || notice.fileUrl} 
+                                                            href={notice.pdfData} 
+                                                            download={notice.pdfFileName}
                                                             target="_blank" 
                                                             rel="noreferrer"
-                                                            className="flex items-center justify-center w-full bg-[#004d00]/10 text-[#004d00] px-4 py-2.5 rounded-lg text-xs font-bold hover:bg-[#004d00] hover:text-white transition-colors border border-[#004d00]/20"
+                                                            className="flex items-center justify-center bg-[#004d00]/10 text-[#004d00] px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-[#004d00] hover:text-white transition-colors border border-[#004d00]/20"
                                                         >
-                                                            <Icons.Download /> <span className="ml-2">Download</span>
+                                                            <Icons.Download /> <span className="ml-1">Download PDF</span>
                                                         </a>
-                                                    )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Priority Badge */}
+                                            {notice.priority && notice.priority !== 'normal' && (
+                                                <div className="mt-2">
+                                                    <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                        notice.priority === 'urgent' ? 'bg-red-100 text-red-700' :
+                                                        notice.priority === 'important' ? 'bg-[#ffd200] text-[#004d00]' :
+                                                        'bg-gray-100 text-gray-700'
+                                                    }`}>
+                                                        {notice.priority.charAt(0).toUpperCase() + notice.priority.slice(1)}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>

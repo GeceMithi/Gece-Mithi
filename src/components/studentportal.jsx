@@ -16,7 +16,8 @@ import {
     deleteDoc, 
     arrayUnion,
     collection, 
-    getDocs     
+    getDocs,
+    addDoc
 } from "firebase/firestore";
 
 import jsPDF from 'jspdf';
@@ -32,21 +33,24 @@ const UPLOAD_PRESET = "student_uploads";
 
 // --- Icons ---
 const Icons = {
-    Dashboard: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>,
-    Users: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>,
-    Profile: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>,
-    Exam: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>,
-    Upload: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>,
-    View: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>,
-    Download: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>,
-    Edit: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>,
-    Key: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>,
-    Close: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>,
-    Logout: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>,
-    Bell: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>,
-    Menu: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>,
-    Check: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 13l4 4L19 7"></path></svg>,
-    Alert: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>,
+    Dashboard: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>,
+    List: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>,
+    Search: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>,
+    GradCap: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>,
+    Users: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>,
+    Profile: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>,
+    Exam: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>,
+    Upload: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>,
+    View: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>,
+    Download: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>,
+    Edit: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>,
+    Key: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>,
+    Close: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>,
+    Logout: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>,
+    Bell: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>,
+    Menu: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>,
+    Check: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>,
+    Alert: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>,
     Spinner: () => <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
 };
 
@@ -64,6 +68,14 @@ const App = () => {
     const [searchedStudent, setSearchedStudent] = useState(null); 
     const [adminFilterPart, setAdminFilterPart] = useState('All');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    
+    // Notice Board States
+    const [noticeTitle, setNoticeTitle] = useState('');
+    const [noticeContent, setNoticeContent] = useState('');
+    const [noticePriority, setNoticePriority] = useState('normal');
+    const [noticePDF, setNoticePDF] = useState(null);
+    const [publishedNotices, setPublishedNotices] = useState([]);
+    const [isPublishingNotice, setIsPublishingNotice] = useState(false);
     
     // Reset Password States
     const [showResetModal, setShowResetModal] = useState(false);
@@ -106,11 +118,34 @@ const App = () => {
                 if (currentUser) {
                     setUser(currentUser);
                     const email = currentUser.email;
-                    if (email === 'admin@gece.com') { setIsAdmin(true); await fetchAllStudentsData(); } 
-                    else { setIsAdmin(false); await fetchStudentData(email.split('@')[0]); }
-                } else { setUser(null); setUserData(null); setIsAdmin(false); }
-            } catch (error) { console.error("Fetch Error:", error); setUser(null); } 
-            finally { setLoading(false); } 
+                    const isAdminUser = email === 'admin@gece.com';
+                    setIsAdmin(isAdminUser);
+                    
+                    if (isAdminUser) {
+                        await fetchAllStudentsData();
+                        await fetchNotices(); 
+                    } else {
+                        const cnic = email.split('@')[0];
+                        const studentRef = doc(db, "students", cnic);
+                        const studentSnap = await getDoc(studentRef);
+                        if (studentSnap.exists()) {
+                            const data = studentSnap.data();
+                            setUserData(data);
+                            setStudentForm(data.personalInfo || {});
+                        }
+                    }
+                } else {
+                    setUser(null);
+                    setIsAdmin(false);
+                    setUserData(null);
+                    setStudentForm({});
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                setErrorMsg("Authentication failed. Please try again.");
+            } finally {
+                setLoading(false);
+            }
         });
         return () => unsubscribe();
     }, []);
@@ -118,15 +153,72 @@ const App = () => {
     const showToast = (message, type = 'success') => { setNotification({ show: true, message, type }); setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000); };
     const getEmail = (cnic) => `${cnic}@studentportal.com`;
     const fetchStudentData = async (cnicOrId) => { let docRef = doc(db, "students", cnicOrId); let docSnap = await getDoc(docRef); if (docSnap.exists()) { setUserData(docSnap.data()); setStudentForm({ ...studentForm, ...docSnap.data().personalInfo }); } else { setStudentForm(prev => ({ ...prev, cnic: cnicOrId })); } };
-    const fetchAllStudentsData = async () => { try { const querySnapshot = await getDocs(collection(db, "students")); let paidList = []; let pendingList = []; querySnapshot.forEach((doc) => { const data = doc.data(); const studentCnic = doc.id; if (data.challans && data.challans.length > 0) { data.challans.forEach(challan => { const studentInfo = { studentCnic: studentCnic, name: data.personalInfo?.fullName || 'N/A', fname: data.personalInfo?.fatherName || 'N/A', ...challan, date: new Date(challan.generatedDate).toLocaleDateString() }; if (challan.status === 'Verified') paidList.push(studentInfo); else if (challan.status === 'Pending Verification') pendingList.push(studentInfo); }); } }); setAllPaidStudents(paidList); setPendingChallans(pendingList); } catch (error) { console.error("Admin Fetch Error:", error); } };
-    const handleAdminSearch = async (e) => { e.preventDefault(); setSearchedStudent(null); if(!adminSearchCnic) return; setLoading(true); try { const docRef = doc(db, "students", adminSearchCnic.trim()); const docSnap = await getDoc(docRef); if (docSnap.exists()) { setSearchedStudent({ ...docSnap.data(), cnic: docSnap.id }); } else { showToast("Student not found!", "error"); } } catch (error) { console.error("Search Error:", error); showToast("Error searching student.", "error"); } finally { setLoading(false); } };
-    const handleDeleteAccount = async (studentCnic) => { if(confirm(`DANGER: Are you sure you want to PERMANENTLY DELETE student ${studentCnic}? This action cannot be undone.`)) { setLoading(true); try { await deleteDoc(doc(db, "students", studentCnic)); setSearchedStudent(null); setAdminSearchCnic(''); await fetchAllStudentsData(); showToast("Account Deleted.", "success"); } catch (error) { console.error("Delete Account Error", error); showToast("Delete failed: " + error.message, "error"); } finally { setLoading(false); } } };
+    
+    const fetchAllStudentsData = async () => { 
+        try { 
+            const querySnapshot = await getDocs(collection(db, "students")); 
+            let paidList = []; 
+            let pendingList = []; 
+            querySnapshot.forEach((doc) => { 
+                const data = doc.data(); 
+                const studentCnic = doc.id; 
+                if (data.challans && data.challans.length > 0) { 
+                    data.challans.forEach(challan => { 
+                        const studentInfo = { 
+                            studentCnic: studentCnic, 
+                            name: data.personalInfo?.fullName || 'N/A', 
+                            fname: data.personalInfo?.fatherName || 'N/A', 
+                            ...challan, 
+                            date: new Date(challan.generatedDate).toLocaleDateString() 
+                        }; 
+                        if (challan.status === 'Verified') paidList.push(studentInfo); 
+                        else if (challan.status === 'Pending Verification') pendingList.push(studentInfo); 
+                    }); 
+                } 
+            }); 
+            setAllPaidStudents(paidList); 
+            setPendingChallans(pendingList); 
+        } catch (error) { console.error("Admin Fetch Error:", error); } 
+    };
+
+    const handleAdminSearch = async (e) => { 
+        e.preventDefault(); 
+        setSearchedStudent(null); 
+        if(!adminSearchCnic) return; 
+        setLoading(true); 
+        try { 
+            const docRef = doc(db, "students", adminSearchCnic.trim()); 
+            const docSnap = await getDoc(docRef); 
+            if (docSnap.exists()) { 
+                setSearchedStudent({ ...docSnap.data(), cnic: docSnap.id }); 
+            } else { 
+                showToast("Student not found!", "error"); 
+            } 
+        } catch (error) { 
+            console.error("Search Error:", error); showToast("Error searching student.", "error"); 
+        } finally { setLoading(false); } 
+    };
+
+    const handleDeleteAccount = async (studentCnic) => { 
+        if(window.confirm(`DANGER: Are you sure you want to PERMANENTLY DELETE student ${studentCnic}? This action cannot be undone.`)) { 
+            setLoading(true); 
+            try { 
+                await deleteDoc(doc(db, "students", studentCnic)); 
+                setSearchedStudent(null); 
+                setAdminSearchCnic(''); 
+                await fetchAllStudentsData(); 
+                showToast("Account Deleted.", "success"); 
+            } catch (error) { 
+                console.error("Delete Account Error", error); showToast("Delete failed: " + error.message, "error"); 
+            } finally { setLoading(false); } 
+        } 
+    };
 
     const openResetModal = () => { setShowResetModal(true); setResetPasswordInput(''); };
     const handleHardResetPassword = async (e) => {
         e.preventDefault();
         if(!resetPasswordInput) return;
-        if(!confirm("IMPORTANT: Have you deleted this user from Firebase Console?")) return;
+        if(!window.confirm("IMPORTANT: Have you deleted this user from Firebase Console?")) return;
         setLoading(true);
         const email = getEmail(searchedStudent.cnic);
         const password = resetPasswordInput;
@@ -191,15 +283,147 @@ const App = () => {
     const handleUploadSubmit = async (e) => { e.preventDefault(); if (!uploadForm.file || !uploadForm.date || !uploadForm.amount) { showToast("Please fill all fields.", "error"); return; } setUploading(true); const cnic = userData?.cnic || user.email.split('@')[0]; try { const reader = new FileReader(); reader.readAsDataURL(uploadForm.file); reader.onloadend = async () => { const base64File = reader.result; const updatedChallans = userData.challans.map(ch => { if (ch.id === selectedChallanId) { return { ...ch, status: 'Pending Verification', uploadTime: Date.now(), paymentDetails: { amount: uploadForm.amount, mode: uploadForm.mode, date: uploadForm.date }, receiptImageUrl: base64File }; } return ch; }); await updateDoc(doc(db, "students", cnic), { challans: updatedChallans }); setUserData(prev => ({ ...prev, challans: updatedChallans })); setShowUploadModal(false); showToast("Receipt Uploaded!", "success"); setUploading(false); }; } catch (error) { showToast("Failed to upload.", "error"); setUploading(false); } };
     const handleViewReceipt = (url) => { setReceiptUrl(url); setShowReceiptModal(true); };
     const handleAdminAction = async (studentCnic, challanId, newStatus) => { try { const studentRef = doc(db, "students", studentCnic); const studentSnap = await getDoc(studentRef); const studentData = studentSnap.data(); const updatedChallans = studentData.challans.map(ch => { if (ch.id === challanId) return { ...ch, status: newStatus }; return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if(searchedStudent && searchedStudent.cnic === studentCnic) { setSearchedStudent({...searchedStudent, challans: updatedChallans}); } showToast(`Challan ${newStatus}`, "success"); } catch (error) { showToast("Failed.", "error"); } };
-    const handleDeleteChallan = async (studentCnic, challanId) => { if(!studentCnic) { showToast("Error: Missing Student CNIC", "error"); return; } if (!confirm("Are you sure you want to DELETE this challan?")) return; try { const studentRef = doc(db, "students", studentCnic); const studentSnap = await getDoc(studentRef); if(studentSnap.exists()) { const studentData = studentSnap.data(); const updatedChallans = studentData.challans.filter(ch => ch.id !== challanId); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if(searchedStudent && searchedStudent.cnic === studentCnic) { setSearchedStudent({...studentData, challans: updatedChallans, cnic: studentCnic}); } showToast("Deleted successfully.", "success"); } else { showToast("Student record not found.", "error"); } } catch (error) { console.error("Delete Error:", error); showToast("Error: " + error.message, "error"); } };
+    const handleDeleteChallan = async (studentCnic, challanId) => { if(!studentCnic) { showToast("Error: Missing Student CNIC", "error"); return; } if (!window.confirm("Are you sure you want to DELETE this challan?")) return; try { const studentRef = doc(db, "students", studentCnic); const studentSnap = await getDoc(studentRef); if(studentSnap.exists()) { const studentData = studentSnap.data(); const updatedChallans = studentData.challans.filter(ch => ch.id !== challanId); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if(searchedStudent && searchedStudent.cnic === studentCnic) { setSearchedStudent({...studentData, challans: updatedChallans, cnic: studentCnic}); } showToast("Deleted successfully.", "success"); } else { showToast("Student record not found.", "error"); } } catch (error) { console.error("Delete Error:", error); showToast("Error: " + error.message, "error"); } };
     const openEditModal = (challan, studentCnic) => { setEditForm({ id: challan.id, studentCnic: studentCnic, part: challan.part, batch: challan.batch, amount: challan.amount, status: challan.status }); setShowEditModal(true); };
     const handleEditSubmit = async (e) => { e.preventDefault(); try { const studentRef = doc(db, "students", editForm.studentCnic); const studentSnap = await getDoc(studentRef); const updatedChallans = studentSnap.data().challans.map(ch => { if (ch.id === editForm.id) { return { ...ch, part: editForm.part, batch: editForm.batch, amount: editForm.amount, status: editForm.status }; } return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if(searchedStudent && searchedStudent.cnic === editForm.studentCnic) { setSearchedStudent({...searchedStudent, challans: updatedChallans}); } setShowEditModal(false); showToast("Record Updated.", "success"); } catch (error) { showToast("Update Failed.", "error"); } };
 
-    // --- RE-ADDED MISSING FUNCTION ---
+    // --- NOTICE BOARD FUNCTIONS ---
+    const fetchNotices = async () => {
+        try {
+            const noticesRef = collection(db, "notices");
+            const noticesSnapshot = await getDocs(noticesRef);
+            const noticesList = noticesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => {
+                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : a.createdAt;
+                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : b.createdAt;
+                return new Date(dateB) - new Date(dateA);
+            });
+            setPublishedNotices(noticesList);
+        } catch (error) {
+            console.error("Error fetching notices:", error);
+        }
+    };
+
+    const publishNotice = async () => {
+        if (!noticeTitle.trim() || !noticeContent.trim()) {
+            showToast("Please fill in all fields", "error");
+            return;
+        }
+
+        setIsPublishingNotice(true);
+        try {
+            const noticesRef = collection(db, "notices");
+            
+            const newNotice = {
+                title: noticeTitle.trim(),
+                content: noticeContent.trim(),
+                priority: noticePriority,
+                pdfData: noticePDF ? noticePDF.data : null,
+                pdfFileName: noticePDF ? noticePDF.name : null,
+                pdfSize: noticePDF ? noticePDF.size : null,
+                createdAt: new Date(),
+                publishedBy: user.email,
+                status: 'active'
+            };
+
+            await addDoc(noticesRef, newNotice);
+            
+            setNoticeTitle('');
+            setNoticeContent('');
+            setNoticePriority('normal');
+            setNoticePDF(null);
+            
+            const fileInput = document.getElementById('notice-pdf-input');
+            if (fileInput) fileInput.value = '';
+            
+            await fetchNotices();
+            
+            showToast("Notice published successfully!", "success");
+        } catch (error) {
+            console.error("Error publishing notice:", error);
+            showToast("Failed to publish notice", "error");
+        } finally {
+            setIsPublishingNotice(false);
+        }
+    };
+
+    const deleteNotice = async (noticeId) => {
+        if (!window.confirm("Are you sure you want to delete this notice?")) return;
+        
+        try {
+            const noticeRef = doc(db, "notices", noticeId);
+            await deleteDoc(noticeRef);
+            await fetchNotices();
+            showToast("Notice deleted successfully", "success");
+        } catch (error) {
+            console.error("Error deleting notice:", error);
+            showToast("Failed to delete notice", "error");
+        }
+    };
+
+    const handleNoticePDFChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.type !== 'application/pdf') {
+                showToast("Only PDF files are allowed", "error");
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) { 
+                showToast("PDF file size must be less than 5MB", "error");
+                return;
+            }
+            
+            showToast("Processing PDF...", "info");
+            
+            try {
+                const pdfBase64 = await convertPDFToBase64(file);
+                
+                setNoticePDF({
+                    data: pdfBase64,
+                    name: file.name,
+                    size: file.size
+                });
+                
+                showToast("PDF processed successfully!", "success");
+            } catch (error) {
+                console.error("PDF processing error:", error);
+                showToast("Failed to process PDF", "error");
+            }
+        }
+    };
+
+    const compressPDF = async (file) => {
+        return new Promise((resolve) => {
+            resolve(file);
+        });
+    };
+
+    const convertPDFToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const result = reader.result;
+                    if (result && result.includes('base64')) {
+                        resolve(result);
+                    } else {
+                        reject(new Error('Failed to convert PDF to base64'));
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleStudentPasswordReset = async () => {
         if(!user || !user.email) return;
         const targetEmail = studentForm.email && studentForm.email.includes('@') ? studentForm.email : user.email;
-        if(confirm(`Send password reset link to ${targetEmail}?`)) {
+        if(window.confirm(`Send password reset link to ${targetEmail}?`)) {
             setLoading(true);
             try { 
                 await sendPasswordResetEmail(auth, targetEmail); 
@@ -216,13 +440,19 @@ const App = () => {
     const TopLoaderBar = () => ( <div className="fixed top-0 left-0 w-full h-1 bg-blue-200 z-50 overflow-hidden"> <div className="h-full bg-yellow-400 animate-pulse w-full origin-left-right scale-x-50"></div> <style>{` @keyframes loading-bar { 0% { transform: translateX(-100%); } 50% { transform: translateX(50%); } 100% { transform: translateX(200%); } } .origin-left-right { animation: loading-bar 1.5s infinite linear; } `}</style> </div> );
     const ToastPopup = () => ( notification.show && ( <div className={`fixed bottom-5 right-5 z-50 px-6 py-4 rounded-lg shadow-xl text-white font-bold transform transition-all duration-300 ease-in-out flex items-center gap-3 animate-bounce ${notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}> {notification.type === 'success' ? <Icons.Check /> : <Icons.Alert />} {notification.message} </div> ) );
 
+    // ==========================================
+    // 1. LOGIN RENDER
+    // ==========================================
     if (!user) return (
         <> 
             {isGlobalLoading && <TopLoaderBar />} 
             <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] p-4 sm:p-6"> 
                 <div className="bg-white rounded-2xl shadow-xl border-4 border-white w-full max-w-md sm:max-w-lg overflow-hidden"> 
                     <div className="bg-[#004d00] p-4 sm:p-6 text-center flex flex-col items-center"> 
-                        <img src="../public/logo1.png" alt="Logo" className="h-16 sm:h-20 mb-3 sm:mb-4 object-contain" />
+                        {/* Styled Login Logo with Yellow Ring */}
+                        <div className="bg-white p-1.5 rounded-full shadow-md w-20 h-20 flex items-center justify-center mb-4 border-[3px] border-[#ffd200]">
+                            <img src="/logo1.png" alt="Logo" className="h-[90%] w-[90%] object-contain" />
+                        </div>
                         <h1 className="text-lg sm:text-xl font-bold text-white tracking-widest uppercase">GOVT. ELEMENTARY COLLEGE</h1>
                         <h2 className="text-xs sm:text-sm font-bold text-[#ffd200] tracking-wider">OF EDUCATION (M/W) MITHI</h2>
                         <p className="text-gray-200 text-[9px] sm:text-[10px] mt-1">Education & Literacy Dept, Govt. of Sindh</p>
@@ -240,79 +470,472 @@ const App = () => {
         </>
     );
 
+    // ==========================================
+    // 2. ADMIN PANEL RENDER
+    // ==========================================
     if (isAdmin) return (
         <> 
             {isGlobalLoading && <TopLoaderBar />} 
             <ToastPopup />
-            <div className="min-h-screen bg-[#f8f9fa] font-sans text-gray-700"> 
-                {/* --- ADMIN HEADER --- */}
-                <header className="bg-[#004d00] border-b border-[#ffd200] h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30 shadow-md"> 
-                    <div className="flex items-center gap-2 sm:gap-4">
-                        <img src="/college_logo.png" alt="Logo" className="h-10 sm:h-14 w-auto object-contain bg-white rounded p-1" />
-                        <div>
-                            <h2 className="text-xs sm:text-sm font-bold text-white tracking-wide">GOVT. ELEMENTARY COLLEGE</h2>
-                            <h3 className="text-[10px] sm:text-xs font-bold text-[#ffd200] tracking-wide">OF EDUCATION (M/W) MITHI</h3>
-                        </div>
-                    </div> 
-                    <button onClick={handleLogout} className="bg-[#ffd200] text-[#004d00] px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-[10px] sm:text-sm font-bold flex items-center gap-1 sm:gap-2"><Icons.Logout /> <span className="hidden sm:inline">LOGOUT</span></button> 
-                </header> 
-                <main className="p-4 sm:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-8"> 
-                    {/* --- ADMIN SIDEBAR NAVIGATION --- */}
-                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-                        <div className="w-full lg:w-64 bg-white rounded-lg shadow-sm border-4 border-white p-3 sm:p-4">
-                            <h3 className="text-xs sm:text-sm font-bold text-[#004d00] uppercase tracking-wide mb-3 sm:mb-4">Admin Panel</h3>
-                            <nav className="space-y-1 sm:space-y-2">
-                                {[
-                                    { id: 'dashboard', label: 'Dashboard', icon: Icons.Dashboard },
-                                    { id: 'noticeBoard', label: 'Notice Board', icon: Icons.Bell },
-                                    { id: 'contentManager', label: 'Content Manager', icon: Icons.Users },
-                                ].map((item) => (
-                                    <button key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium transition-colors ${activeTab === item.id ? 'bg-[#ffd200] text-[#004d00] border-2 border-[#ffd200] rounded-lg' : 'bg-[#ffd200] text-[#004d00]'}`}>
-                                        <item.icon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                        {item.label}
-                                    </button>
-                                ))}
-                            </nav>
+            
+            <div className="min-h-screen bg-[#f8f9fa] font-sans text-gray-700 flex flex-col"> 
+                <main className="p-4 sm:p-8 max-w-7xl mx-auto w-full flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6"> 
+                    
+                    {/* --- STYLED ADMIN SIDEBAR NAVIGATION --- */}
+                    <div className="w-full lg:w-[280px] bg-[#004d00] rounded-xl shadow-2xl overflow-hidden flex flex-col shrink-0 min-h-[calc(100vh-4rem)]">
+                        {/* Profile / Title Section */}
+                        <div className="p-6 flex flex-col items-center justify-center border-b border-[#006400]">
+                            {/* Styled Admin Logo with Yellow Ring */}
+                            <div className="bg-white p-1 rounded-full mb-3 shadow-md w-20 h-20 flex items-center justify-center border-[3px] border-[#ffd200]">
+                                <img src="/logo1.png" alt="Logo" className="h-[90%] w-[90%] object-contain" />
+                            </div>
+                            <h2 className="text-white font-extrabold tracking-wider text-lg mt-1">ADMIN PANEL</h2>
+                            <p className="text-[#00ff80] text-xs font-bold tracking-widest mt-1">GECE MITHI</p>
                         </div>
                         
-                        <div className="flex-1">
-                            {/* --- ADMIN CONTENT --- */}
-                            {activeTab === 'dashboard' && (
-                                <div className="space-y-6">
-                                    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"> 
-                                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Student Record Management</h3> 
-                                        <div className="flex gap-2"> <input type="text" className="flex-1 px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#1a4d0f] outline-none" placeholder="Search by CNIC..." value={adminSearchCnic} onChange={(e) => setAdminSearchCnic(e.target.value)} /> <button onClick={handleAdminSearch} className="bg-[#1a4d0f] hover:bg-[#12360a] text-white px-6 py-2 rounded font-bold text-sm">SEARCH</button> </div> 
-                                        {searchedStudent && ( <div className="mt-6 border-t border-gray-100 pt-6"> <div className="flex justify-between items-start mb-4"> <div><h4 className="text-lg font-bold text-[#1a4d0f]">{searchedStudent.personalInfo?.fullName}</h4><p className="text-xs text-gray-400 uppercase">{searchedStudent.cnic}</p></div> <div className="flex gap-3"> <button onClick={() => handleDeleteAccount(searchedStudent.cnic)} className="flex items-center gap-1 text-xs bg-red-100 text-red-700 px-3 py-1 rounded font-bold hover:bg-red-200"><Icons.Trash /> DELETE ACCOUNT</button> <button onClick={openResetModal} className="flex items-center gap-1 text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded font-bold hover:bg-orange-200"><Icons.Key /> RESET PASSWORD</button> <button onClick={() => setSearchedStudent(null)} className="text-gray-400 hover:text-red-500"><Icons.Close /></button> </div> </div> <div className="overflow-x-auto"> <table className="min-w-full divide-y divide-gray-200 text-sm"> <thead className="bg-gray-50"><tr><th className="px-4 py-3 text-left font-semibold text-gray-600">Details</th><th className="px-4 py-3 text-left font-semibold text-gray-600">Type</th><th className="px-4 py-3 text-left font-semibold text-gray-600">Amount</th><th className="px-4 py-3 text-left font-semibold text-gray-600">Status</th><th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th></tr></thead> <tbody className="divide-y divide-gray-200 bg-white"> {searchedStudent.challans?.map((ch) => ( <tr key={ch.id} className="hover:bg-gray-50"> <td className="px-4 py-3"><div className="font-bold text-gray-800">Part {ch.part}</div><div className="text-xs text-gray-500">{ch.challanNo} | Batch {ch.batch}</div></td> <td className="px-4 py-3 text-gray-600">{ch.statusType || '-'}</td> <td className="px-4 py-3 font-bold text-gray-800">{ch.amount}</td> <td className="px-4 py-3"><span className={`px-2 py-1 rounded text-xs font-bold ${ch.status === 'Verified' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{ch.status}</span></td> <td className="px-4 py-3 flex gap-2"><button onClick={() => openEditModal(ch, searchedStudent.cnic)} className="text-[#1a4d0f] font-bold text-xs bg-blue-50 px-3 py-1 rounded hover:bg-blue-100">EDIT</button><button onClick={() => handleDeleteChallan(searchedStudent.cnic, ch.id)} className="text-red-600 font-bold text-xs bg-red-50 px-3 py-1 rounded hover:bg-red-100">DELETE</button></td> </tr> ))} </tbody> </table> </div> </div> )} 
-                                    </div> 
-                                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm"> <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center"><h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">Pending Verifications</h3><span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold">{pendingChallans.length}</span></div> <div className="overflow-x-auto"> <table className="min-w-full divide-y divide-gray-200 text-sm"> <thead className="bg-gray-50"><tr><th className="px-6 py-3 text-left font-semibold text-gray-600">Student</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Challan Info</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Proof</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Decision</th></tr></thead> <tbody className="divide-y divide-gray-200 bg-white"> {pendingChallans.length === 0 ? <tr><td colSpan="4" className="px-6 py-6 text-center text-gray-400 text-xs">All caught up! No pending requests.</td></tr> : pendingChallans.map((st, i) => ( <tr key={i} className="hover:bg-gray-50"> <td className="px-6 py-4"><div className="font-bold text-gray-900">{st.name}</div><div className="text-xs text-gray-500">{st.studentCnic}</div></td> <td className="px-6 py-4"><div className="text-gray-700">Part {st.part}</div><div className="text-xs text-gray-500 font-mono">{st.challanNo}</div></td> <td className="px-6 py-4"><button onClick={() => handleViewReceipt(st.receiptImageUrl)} className="text-[#1a4d0f] text-xs font-bold underline flex items-center gap-1"><Icons.View /> VIEW</button></td> <td className="px-6 py-4 flex gap-2"><button onClick={() => handleAdminAction(st.studentCnic, st.id, 'Verified')} className="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-green-700">APPROVE</button><button onClick={() => handleAdminAction(st.studentCnic, st.id, 'Not Verified')} className="border border-red-200 text-red-600 px-3 py-1 rounded text-xs font-bold hover:bg-red-50">REJECT</button></td> </tr> ))} </tbody> </table> </div> </div> 
-                                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm"> <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center"><h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide">Verified Payments</h3><div className="flex gap-2"> <select value={adminFilterPart} onChange={(e) => setAdminFilterPart(e.target.value)} className="border px-2 py-1 rounded text-xs text-gray-600 outline-none"><option value="All">All Parts</option><option value="I">Part I</option><option value="II">Part II</option><option value="III">Part III</option><option value="IV">Part IV</option></select> <button onClick={generateAdminPDF} className="text-[#1a4d0f] text-xs font-bold flex items-center gap-1 hover:underline"><Icons.Download /> REPORT</button> </div></div> <div className="overflow-x-auto max-h-96"> <table className="min-w-full divide-y divide-gray-200 text-sm"> <thead className="bg-gray-50 sticky top-0"><tr><th className="px-6 py-3 text-left font-semibold text-gray-600">CNIC</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Name</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Detail</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Date</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Receipt</th><th className="px-6 py-3 text-left font-semibold text-gray-600">Action</th></tr></thead> <tbody className="divide-y divide-gray-200 bg-white"> {allPaidStudents.filter(st => adminFilterPart === 'All' || st.part === adminFilterPart).map((st, i) => ( <tr key={i} className="hover:bg-gray-50"> <td className="px-6 py-3 text-gray-500 font-mono text-xs">{st.studentCnic}</td> <td className="px-6 py-3 font-bold text-gray-800">{st.name}</td> <td className="px-6 py-3 text-gray-600">Part {st.part} / {st.batch}</td> <td className="px-6 py-3 text-gray-500 text-xs">{st.date}</td> <td className="px-6 py-3"><button onClick={() => handleViewReceipt(st.receiptImageUrl)} className="text-[#1a4d0f] hover:text-[#006391]"><Icons.View /></button></td> <td className="px-6 py-3 flex gap-2"><button onClick={() => openEditModal(st, st.studentCnic)} className="text-blue-600 hover:text-blue-800"><Icons.Edit /></button><button onClick={() => handleDeleteChallan(st.studentCnic, st.id)} className="text-red-600 hover:text-red-800"><Icons.Delete /></button></td> </tr> ))} </tbody> </table> </div> </div> 
-                                </div>
-                            )}
+                        {/* Buttons Section */}
+                        <nav className="p-4 space-y-3">
+                            {[
+                                { id: 'dashboard', label: 'ALL STUDENTS', icon: Icons.Dashboard },
+                                { id: 'verifiedList', label: 'VERIFIED LIST', icon: Icons.List },
+                                { id: 'noticeBoard', label: 'NOTICE BOARD', icon: Icons.Bell },
+                                { id: 'contentManager', label: 'CONTENT MANAGER', icon: Icons.Users },
+                            ].map((item) => (
+                                <button 
+                                    key={item.id} 
+                                    onClick={() => setActiveTab(item.id)} 
+                                    className={`w-full flex items-center px-4 py-3.5 rounded-lg text-sm font-bold transition-all duration-300 shadow-sm
+                                        ${activeTab === item.id 
+                                            ? 'bg-[#ffd200] text-[#004d00]' 
+                                            : 'bg-[#003b00] text-white border border-[#005a00] hover:bg-[#002a00] hover:border-[#004d00]'
+                                        }`}
+                                >
+                                    <item.icon className="w-5 h-5 mr-3" />
+                                    {item.label}
+                                </button>
+                            ))}
+                        </nav>
 
-                            {activeTab === 'noticeBoard' && (
-                                <BatchSection
-                                    title="All Batches Management"
-                                    subtitle="View and manage all student batches"
-                                    batches={[]} // Static batches as per previous changes
-                                    existingBatches={["2k17", "2k18", "2k19", "2020", "2k21", "2k22", "2k23", "2k24", "2k25", "2k26", "2k27", "2k28", "2k29", "2k30"]}
-                                    showStudents={true}
-                                    onRefresh={() => {}}
-                                />
-                            )}
-
-                            {activeTab === 'contentManager' && (
-                                <DynamicContentManager />
-                            )}
+                        {/* --- LOGOUT BUTTON AT BOTTOM --- */}
+                        <div className="p-4 border-t border-[#006400] mt-auto">
+                            <button 
+                                onClick={handleLogout} 
+                                className="w-full flex items-center justify-center px-4 py-3 rounded-lg bg-[#ffd200] hover:bg-yellow-500 text-[#004d00] font-bold text-sm uppercase tracking-wide transition-colors shadow-md"
+                            >
+                                <Icons.Logout className="w-5 h-5 mr-2" /> LOGOUT
+                            </button>
                         </div>
-                    </div> 
+                    </div>
+                    
+                    <div className="flex-1 w-full overflow-x-auto">
+                        {/* --- ADMIN CONTENT SECTIONS --- */}
+
+                        {/* 1. DASHBOARD / ALL STUDENTS */}
+                        {activeTab === 'dashboard' && (
+                            <div className="space-y-6 animate-fade-in w-full">
+                                <div className="bg-white p-6 rounded-lg shadow-sm border-t-4 border-[#004d00]">
+                                    <form onSubmit={handleAdminSearch} className="flex gap-4">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Search by Student CNIC..." 
+                                            className="flex-1 p-3 border rounded focus:ring-2 focus:ring-[#004d00] outline-none" 
+                                            value={adminSearchCnic} 
+                                            onChange={(e) => setAdminSearchCnic(e.target.value)} 
+                                        />
+                                        <button type="submit" className="bg-[#004d00] text-white px-6 py-3 rounded font-bold shadow-md hover:bg-[#003800] transition-colors flex items-center gap-2">
+                                            <Icons.Search /> Search
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                {!searchedStudent && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
+                                                <h3 className="text-gray-500 font-bold uppercase text-xs mb-2">Pending Verifications</h3>
+                                                <p className="text-3xl font-extrabold text-orange-600">{pendingChallans.length}</p>
+                                            </div>
+                                            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+                                                <h3 className="text-gray-500 font-bold uppercase text-xs mb-2">Verified Challans</h3>
+                                                <p className="text-3xl font-extrabold text-green-600">{allPaidStudents.length}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        {pendingChallans.length > 0 && (
+                                            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                                                <div className="p-4 bg-orange-50 border-b border-orange-100"><h3 className="font-bold text-orange-800">Requires Verification</h3></div>
+                                                <div className="p-4 overflow-x-auto">
+                                                    <table className="w-full text-sm text-left">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="py-2 px-3">Student Name</th>
+                                                                <th className="py-2 px-3">CNIC</th>
+                                                                <th className="py-2 px-3">Amount</th>
+                                                                <th className="py-2 px-3">Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {pendingChallans.map((p, idx) => (
+                                                                <tr key={idx} className="border-b">
+                                                                    <td className="py-2 px-3 font-bold">{p.name}</td>
+                                                                    <td className="py-2 px-3 text-xs">{p.studentCnic}</td>
+                                                                    <td className="py-2 px-3 font-bold text-[#004d00]">Rs.{p.amount}</td>
+                                                                    <td className="py-2 px-3 flex gap-2">
+                                                                        <button onClick={() => { setAdminSearchCnic(p.studentCnic); handleAdminSearch({preventDefault:()=>{} }); }} className="text-xs bg-[#004d00] text-white px-3 py-1 rounded">View Profile</button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {searchedStudent && (
+                                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                                        <div className="p-6 border-b border-gray-200 flex justify-between items-start bg-gray-50">
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-[#004d00] uppercase">{searchedStudent.personalInfo?.fullName || "Name Not Set"}</h3>
+                                                <p className="text-gray-500 font-mono mt-1">CNIC: {searchedStudent.cnic}</p>
+                                                <p className="text-sm text-gray-600 mt-2"><strong>Father:</strong> {searchedStudent.personalInfo?.fatherName || "N/A"} | <strong>Batch:</strong> {searchedStudent.challans?.[0]?.batch || "N/A"}</p>
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <button onClick={openResetModal} className="bg-orange-100 text-orange-700 px-4 py-2 rounded text-xs font-bold hover:bg-orange-200 transition flex items-center justify-center gap-2"><Icons.Key /> Reset Password</button>
+                                                <button onClick={() => handleDeleteAccount(searchedStudent.cnic)} className="bg-red-100 text-red-700 px-4 py-2 rounded text-xs font-bold hover:bg-red-200 transition flex items-center justify-center gap-2"><Icons.Close /> Delete Account</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="p-6">
+                                            <h4 className="font-bold text-gray-700 mb-4 border-b pb-2">Challan Records</h4>
+                                            {(!searchedStudent.challans || searchedStudent.challans.length === 0) ? (
+                                                <p className="text-gray-500 text-sm">No challan records found for this student.</p>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-sm text-left">
+                                                        <thead className="bg-[#004d00] text-white">
+                                                            <tr>
+                                                                <th className="py-3 px-4 rounded-tl-lg">Challan No</th>
+                                                                <th className="py-3 px-4">Details</th>
+                                                                <th className="py-3 px-4">Amount</th>
+                                                                <th className="py-3 px-4">Receipt</th>
+                                                                <th className="py-3 px-4">Status</th>
+                                                                <th className="py-3 px-4 rounded-tr-lg text-right">Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-gray-100">
+                                                            {searchedStudent.challans.map((ch) => (
+                                                                <tr key={ch.id} className="hover:bg-gray-50">
+                                                                    <td className="py-3 px-4 font-mono text-xs">{ch.challanNo}</td>
+                                                                    <td className="py-3 px-4 font-bold">Part {ch.part} <span className="text-xs text-gray-500 block font-normal">{ch.batch} - {ch.statusType}</span></td>
+                                                                    <td className="py-3 px-4 font-bold text-[#004d00]">Rs.{ch.amount}</td>
+                                                                    <td className="py-3 px-4">
+                                                                        {ch.receiptImageUrl ? (
+                                                                            <button onClick={() => handleViewReceipt(ch.receiptImageUrl)} className="text-blue-600 hover:underline flex items-center gap-1 text-xs font-bold"><Icons.View /> View</button>
+                                                                        ) : <span className="text-gray-400 text-xs">No Receipt</span>}
+                                                                    </td>
+                                                                    <td className="py-3 px-4">
+                                                                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${ch.status === 'Verified' ? 'bg-green-100 text-green-700' : ch.status === 'Pending Verification' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>{ch.status}</span>
+                                                                    </td>
+                                                                    <td className="py-3 px-4 text-right">
+                                                                        <div className="flex justify-end gap-2">
+                                                                            {ch.status !== 'Verified' && ch.receiptImageUrl && (
+                                                                                <button onClick={() => handleAdminAction(searchedStudent.cnic, ch.id, 'Verified')} className="bg-green-100 text-green-700 p-1.5 rounded hover:bg-green-200" title="Verify Payment"><Icons.Check /></button>
+                                                                            )}
+                                                                            <button onClick={() => openEditModal(ch, searchedStudent.cnic)} className="bg-blue-100 text-blue-700 p-1.5 rounded hover:bg-blue-200" title="Edit Record"><Icons.Edit /></button>
+                                                                            <button onClick={() => handleDeleteChallan(searchedStudent.cnic, ch.id)} className="bg-red-100 text-red-700 p-1.5 rounded hover:bg-red-200" title="Delete Challan"><Icons.Close /></button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* 2. VERIFIED LIST */}
+                        {activeTab === 'verifiedList' && (
+                            <div className="bg-white rounded-lg shadow-sm border-4 border-white overflow-hidden animate-fade-in w-full">
+                                <div className="bg-[#004d00] px-6 py-4 flex justify-between items-center border-b border-[#ffd200]">
+                                    <div>
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wide">Verified List</h3>
+                                        <p className="text-[10px] text-[#ffd200] mt-1">Students with paid and verified challans</p>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <select 
+                                            value={adminFilterPart} 
+                                            onChange={(e) => setAdminFilterPart(e.target.value)} 
+                                            className="bg-transparent text-white px-3 py-1.5 rounded text-xs font-bold outline-none border-2 border-[#ffd200] cursor-pointer"
+                                        >
+                                            <option value="All" className="text-black bg-white">All Parts</option>
+                                            <option value="I" className="text-black bg-white">Part I</option>
+                                            <option value="II" className="text-black bg-white">Part II</option>
+                                            <option value="III" className="text-black bg-white">Part III</option>
+                                            <option value="IV" className="text-black bg-white">Part IV</option>
+                                        </select>
+                                        <button onClick={generateAdminPDF} className="bg-[#ffd200] text-[#004d00] hover:bg-yellow-500 px-4 py-1.5 rounded font-bold shadow transition-colors text-xs flex items-center gap-2 uppercase tracking-wide"><Icons.Download /> Download PDF</button>
+                                    </div>
+                                </div>
+                                <div className="p-0 overflow-x-auto w-full">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+                                            <tr>
+                                                <th className="py-3 px-4">CNIC</th>
+                                                <th className="py-3 px-4">Name</th>
+                                                <th className="py-3 px-4">Father Name</th>
+                                                <th className="py-3 px-4">Part</th>
+                                                <th className="py-3 px-4">Amount</th>
+                                                <th className="py-3 px-4">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100">
+                                            {allPaidStudents.filter(st => adminFilterPart === 'All' || st.part === adminFilterPart).length === 0 ? (
+                                                <tr><td colSpan="6" className="p-8 text-center text-gray-400 font-medium">No verified students found for this category.</td></tr>
+                                            ) : (
+                                                allPaidStudents.filter(st => adminFilterPart === 'All' || st.part === adminFilterPart).map((st, idx) => (
+                                                    <tr key={idx} className="hover:bg-gray-50">
+                                                        <td className="py-3 px-4 font-mono text-xs">{st.studentCnic}</td>
+                                                        <td className="py-3 px-4 font-bold text-gray-800 uppercase">{st.name}</td>
+                                                        <td className="py-3 px-4 text-gray-600 uppercase">{st.fname}</td>
+                                                        <td className="py-3 px-4 font-bold">Part {st.part} <span className="text-xs text-gray-400 font-normal">({st.batch})</span></td>
+                                                        <td className="py-3 px-4 text-[#004d00] font-bold">Rs.{st.amount}</td>
+                                                        <td className="py-3 px-4 text-xs">{st.date}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 3. NOTICE BOARD */}
+                        {activeTab === 'noticeBoard' && (
+                            <div className="space-y-6 animate-fade-in w-full">
+                                <div className="bg-white rounded-lg border-4 border-white shadow-sm overflow-hidden">
+                                    <div className="bg-[#004d00] px-6 py-4 border-b border-[#ffd200]">
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wide">Notice Board Management</h3>
+                                        <p className="text-[10px] text-[#ffd200] mt-1">Update and manage college notices</p>
+                                    </div>
+                                    <div className="p-6 space-y-6">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#004d00] uppercase mb-2">Notice Title</label>
+                                            <input
+                                                type="text"
+                                                value={noticeTitle}
+                                                onChange={(e) => setNoticeTitle(e.target.value)}
+                                                className="w-full px-4 py-3 border-2 border-[#ffd200] rounded-lg focus:ring-2 focus:ring-[#004d00] focus:border-transparent"
+                                                placeholder="Enter notice title..."
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#004d00] uppercase mb-2">Notice Content</label>
+                                            <textarea
+                                                value={noticeContent}
+                                                onChange={(e) => setNoticeContent(e.target.value)}
+                                                className="w-full px-4 py-3 border-2 border-[#ffd200] rounded-lg focus:ring-2 focus:ring-[#004d00] focus:border-transparent h-32"
+                                                placeholder="Enter notice content..."
+                                            ></textarea>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#004d00] uppercase mb-2">Priority</label>
+                                            <select 
+                                                value={noticePriority}
+                                                onChange={(e) => setNoticePriority(e.target.value)}
+                                                className="w-full px-4 py-3 border-2 border-[#ffd200] rounded-lg focus:ring-2 focus:ring-[#004d00] focus:border-transparent"
+                                            >
+                                                <option value="normal">Normal</option>
+                                                <option value="important">Important</option>
+                                                <option value="urgent">Urgent</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-[#004d00] uppercase mb-2">PDF Document (Optional)</label>
+                                            <div className="border-2 border-[#ffd200] rounded-lg p-4">
+                                                <input
+                                                    id="notice-pdf-input"
+                                                    type="file"
+                                                    accept=".pdf"
+                                                    onChange={handleNoticePDFChange}
+                                                    className="hidden"
+                                                />
+                                                <label
+                                                    htmlFor="notice-pdf-input"
+                                                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-[#ffd200] rounded-lg cursor-pointer hover:bg-[#f8f9fa] transition-colors"
+                                                >
+                                                    <Icons.Upload className="w-5 h-5 mr-2 text-[#004d00]" />
+                                                    <span className="text-sm text-gray-600">
+                                                        {noticePDF ? noticePDF.name : 'Click to upload PDF (Max 5MB)'}
+                                                    </span>
+                                                </label>
+                                                {noticePDF && (
+                                                    <div className="mt-2 flex items-center justify-between">
+                                                        <span className="text-xs text-green-600">✓ PDF Selected</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setNoticePDF(null);
+                                                                const fileInput = document.getElementById('notice-pdf-input');
+                                                                if (fileInput) fileInput.value = '';
+                                                            }}
+                                                            className="text-xs text-red-600 hover:text-red-800"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex gap-4">
+                                            <button 
+                                                onClick={publishNotice}
+                                                disabled={isPublishingNotice}
+                                                className="bg-[#004d00] hover:bg-[#003800] text-white px-6 py-3 rounded-lg font-bold shadow-md transition-all text-xs uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {isPublishingNotice ? 'Publishing...' : <><Icons.Upload /> Update</>}
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    setNoticeTitle('');
+                                                    setNoticeContent('');
+                                                    setNoticePriority('normal');
+                                                    setNoticePDF(null);
+                                                    const fileInput = document.getElementById('notice-pdf-input');
+                                                    if (fileInput) fileInput.value = '';
+                                                }}
+                                                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold shadow-md transition-all text-xs uppercase tracking-wide"
+                                            >
+                                                <Icons.Close /> Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-white rounded-lg border-4 border-white shadow-sm overflow-hidden">
+                                    <div className="bg-[#004d00] px-6 py-4 border-b border-[#ffd200]">
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wide">Published Notices</h3>
+                                        <p className="text-[10px] text-[#ffd200] mt-1">View and manage existing notices</p>
+                                    </div>
+                                    <div className="p-6">
+                                        <div className="space-y-4">
+                                            {publishedNotices.length === 0 ? (
+                                                <div className="text-center py-8 text-gray-400">
+                                                    <Icons.Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                                    <p className="text-sm">No notices published yet</p>
+                                                </div>
+                                            ) : (
+                                                publishedNotices.map((notice) => (
+                                                    <div key={notice.id} className="p-4 border-2 border-[#ffd200] rounded-lg bg-[#f8f9fa]">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h4 className="font-bold text-[#004d00]">{notice.title}</h4>
+                                                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                                notice.priority === 'urgent' ? 'bg-red-100 text-red-700' :
+                                                                notice.priority === 'important' ? 'bg-[#ffd200] text-[#004d00]' :
+                                                                'bg-gray-100 text-gray-700'
+                                                            }`}>
+                                                                {(notice.priority || 'normal').charAt(0).toUpperCase() + (notice.priority || 'normal').slice(1)}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-600 mb-2">{notice.content}</p>
+                                                        
+                                                        {notice.pdfUrl && (
+                                                            <div className="mb-2 p-2 bg-white rounded border border-[#ffd200]">
+                                                                <div className="flex items-center justify-between">
+                                                                    <div className="flex items-center">
+                                                                        <Icons.Download className="w-4 h-4 mr-2 text-[#004d00]" />
+                                                                        <span className="text-xs text-gray-600">
+                                                                            PDF: {notice.pdfFileName}
+                                                                        </span>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            window.open(notice.pdfUrl, '_blank');
+                                                                        }}
+                                                                        className="text-[#004d00] hover:text-[#003800] text-xs font-bold underline"
+                                                                    >
+                                                                        View PDF
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-xs text-gray-400">
+                                                                Published: {notice.createdAt?.toDate?.() ? 
+                                                                    new Date(notice.createdAt.toDate()).toLocaleDateString() : 
+                                                                    new Date(notice.createdAt?.toMillis?.() || notice.createdAt).toLocaleDateString()
+                                                                }
+                                                            </span>
+                                                            <div className="flex gap-2">
+                                                                <button className="text-[#004d00] hover:underline text-xs font-bold">Edit</button>
+                                                                <button 
+                                                                    onClick={() => deleteNotice(notice.id)}
+                                                                    className="text-red-600 hover:underline text-xs font-bold"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 4. CONTENT MANAGER */}
+                        {activeTab === 'contentManager' && (
+                            <div className="animate-fade-in w-full">
+                                <DynamicContentManager />
+                            </div>
+                        )}
+                    </div>
                 </main> 
+
+                {/* --- ADMIN MODALS --- */}
                 {showEditModal && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-lg shadow-xl w-full max-w-sm"><div className="p-5 border-b border-gray-100"><h3 className="font-bold text-gray-800">Edit Record</h3></div><form onSubmit={handleEditSubmit} className="p-5 space-y-4"><div><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Part</label><select value={editForm.part} onChange={(e) => setEditForm({...editForm, part: e.target.value})} className="w-full border p-2 rounded text-sm"><option value="I">Part I</option><option value="II">Part II</option><option value="III">Part III</option><option value="IV">Part IV</option></select></div><div><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label><select value={editForm.status} onChange={(e) => setEditForm({...editForm, status: e.target.value})} className="w-full border p-2 rounded text-sm"><option value="Verified">Verified</option><option value="Not Verified">Not Verified</option><option value="Pending Verification">Pending Verification</option></select></div><div className="flex justify-end gap-2 pt-2"><button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2 text-gray-500 text-xs font-bold hover:bg-gray-100 rounded">CANCEL</button><button type="submit" className="px-4 py-2 bg-[#1a4d0f] text-white text-xs font-bold hover:bg-[#12360a] rounded shadow-sm">SAVE</button></div></form></div></div>} 
                 {showReceiptModal && <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-lg shadow-xl max-w-2xl w-full h-[80vh] flex flex-col"><div className="p-3 border-b flex justify-between items-center"><h3 className="font-bold text-sm text-gray-600 uppercase">Receipt Proof</h3><button onClick={() => setShowReceiptModal(false)} className="text-gray-400 hover:text-red-500"><Icons.Close /></button></div><div className="flex-1 bg-black/5 p-4 flex justify-center items-center overflow-auto"><img src={receiptUrl} alt="Receipt" className="max-h-full object-contain shadow" /></div></div></div>} 
+                {showResetModal && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
+                            <div className="p-5 border-b border-gray-100 bg-red-50 rounded-t-lg">
+                                <h3 className="font-bold text-red-700 uppercase flex items-center gap-2"><Icons.Key /> Force Reset Password</h3>
+                            </div>
+                            <form onSubmit={handleHardResetPassword} className="p-5 space-y-4">
+                                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-xs text-yellow-800 font-medium">
+                                    Warning: This will overwrite the user's password. Make sure you have deleted the user from Firebase Auth Console first.
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">New Password</label>
+                                    <input type="text" value={resetPasswordInput} onChange={(e) => setResetPasswordInput(e.target.value)} className="w-full border p-2 rounded text-sm" placeholder="Enter new password" required minLength="6" />
+                                </div>
+                                <div className="flex justify-end gap-2 pt-2">
+                                    <button type="button" onClick={() => setShowResetModal(false)} className="px-4 py-2 text-gray-500 text-xs font-bold hover:bg-gray-100 rounded">CANCEL</button>
+                                    <button type="submit" className="px-4 py-2 bg-red-600 text-white text-xs font-bold hover:bg-red-700 rounded shadow-sm">RESET NOW</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div> 
         </>
     );
 
-    // --- STUDENT DASHBOARD ---
+    // ==========================================
+    // 3. STUDENT DASHBOARD RENDER
+    // ==========================================
     return (
         <>
             {isGlobalLoading && <TopLoaderBar />}
@@ -321,7 +944,10 @@ const App = () => {
                 {/* Mobile Menu Toggle */}
                 <div className="lg:hidden bg-[#004d00] p-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <img src="../public/logo.png" alt="College Logo" className="h-8 w-auto object-contain bg-white rounded p-0.5" />
+                        {/* Styled Mobile Logo */}
+                        <div className="bg-white p-0.5 rounded-full shadow-sm w-10 h-10 flex items-center justify-center border-[2px] border-[#ffd200]">
+                            <img src="/logo1.png" alt="College Logo" className="h-[90%] w-[90%] object-contain" />
+                        </div>
                         <span className="text-white text-xs font-bold">Student Portal</span>
                     </div>
                     <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white p-2">
@@ -331,20 +957,23 @@ const App = () => {
 
                 {/* Sidebar */}
                 <aside className={`${mobileMenuOpen ? 'flex' : 'hidden'} lg:flex w-full lg:w-64 bg-[#004d00] text-white flex-col shadow-2xl fixed lg:sticky top-0 lg:top-auto h-screen z-40`}>
-                    <div className="h-20 lg:h-24 flex items-center justify-center border-b border-green-800 bg-[#004d00] px-4">
+                    <div className="h-20 lg:h-32 flex items-center justify-center border-b border-green-800 bg-[#004d00] px-4">
                         {/* --- SIDEBAR HEADER --- */}
                         <div className="flex flex-col items-center">
-                            <img src="../public/logo.png" alt="College Logo" className="h-8 lg:h-10 w-auto object-contain bg-white rounded p-0.5 mb-1" />
+                            {/* Styled Student Sidebar Logo */}
+                            <div className="bg-white p-1 rounded-full shadow-sm w-12 h-12 lg:w-16 lg:h-16 flex items-center justify-center mb-2 border-[3px] border-[#ffd200]">
+                                <img src="/logo1.png" alt="College Logo" className="h-[90%] w-[90%] object-contain" />
+                            </div>
                             <h1 className="text-[8px] lg:text-[10px] font-extrabold text-white leading-tight tracking-wider text-center">GOVT. ELEMENTARY COLLEGE</h1>
                             <h2 className="text-[6px] lg:text-[8px] font-bold text-[#ffd200] leading-tight tracking-wider text-center">OF EDUCATION (M/W) MITHI</h2>
                         </div>
                     </div>
                     <div className="p-4 lg:p-6">
                         <div className="flex items-center gap-2 lg:gap-3 mb-6 lg:mb-8 p-2 lg:p-3 bg-green-900/50 rounded-lg border border-green-800">
-                            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full bg-white text-[#004d00] flex items-center justify-center text-[10px] lg:text-xs font-bold overflow-hidden border-2 border-green-200">
+                            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full bg-white text-[#004d00] flex items-center justify-center text-[10px] lg:text-xs font-bold overflow-hidden border-2 border-[#ffd200]">
                                 {studentForm.profileImage ? <img src={studentForm.profileImage} className="w-full h-full object-cover" /> : studentForm.fullName?.charAt(0) || 'U'}
                             </div>
-                            <div className="overflow-hidden"><h4 className="text-[10px] lg:text-xs font-bold truncate text-white uppercase">{studentForm.fullName || 'Student'}</h4><p className="text-[8px] lg:text-[10px] text-green-200 truncate">{user.email.split('@')[0]}</p></div>
+                            <div className="overflow-hidden"><h4 className="text-[10px] lg:text-xs font-bold truncate text-white uppercase">{studentForm.fullName || 'Student'}</h4><p className="text-[8px] lg:text-[10px] text-[#ffd200] truncate">{user.email.split('@')[0]}</p></div>
                         </div>
                         <nav className="space-y-1">
                             {[
@@ -352,169 +981,196 @@ const App = () => {
                                 { id: 'profile', label: 'My Profile', icon: Icons.Profile },
                                 { id: 'generator', label: 'Exam Challan', icon: Icons.Exam },
                             ].map((item) => (
-                                <button key={item.id} onClick={() => {setActiveTab(item.id); setMobileMenuOpen(false);}} className={`w-full flex items-center px-3 lg:px-4 py-2 lg:py-3 rounded-lg transition-all duration-200 ${activeTab === item.id ? 'bg-[#ffd200] text-[#004d00] shadow-md font-bold border-2 border-[#ffd200] rounded-lg' : 'bg-[#ffd200] text-[#004d00] font-medium'}`}>
+                                <button key={item.id} onClick={() => {setActiveTab(item.id); setMobileMenuOpen(false);}} className={`w-full flex items-center px-3 lg:px-4 py-2 lg:py-3 rounded-lg transition-all duration-200 ${activeTab === item.id ? 'bg-[#ffd200] text-[#004d00] shadow-md font-bold border-2 border-[#ffd200] rounded-lg' : 'bg-transparent text-white hover:bg-[#003b00] border-2 border-transparent font-medium'}`}>
                                     <item.icon className="w-3 h-3 lg:w-4 lg:h-4 mr-2 lg:mr-3" /> <span className="text-[10px] lg:text-xs tracking-wide uppercase">{item.label}</span>
                                 </button>
                             ))}
                         </nav>
                     </div>
-                    <div className="mt-auto p-6 border-t border-[#ffd200]">
-                        <button onClick={handleLogout} className="w-full flex items-center justify-center px-4 py-3 rounded-lg bg-[#ffd200] text-[#004d00] font-bold text-xs uppercase tracking-wide"><Icons.Logout /> LOGOUT</button>
+                    <div className="mt-auto p-6 border-t border-[#006400]">
+                        <button onClick={handleLogout} className="w-full flex items-center justify-center px-4 py-3 rounded-lg bg-[#ffd200] text-[#004d00] hover:bg-yellow-500 font-bold text-xs uppercase tracking-wide"><Icons.Logout className="mr-2" /> LOGOUT</button>
                     </div>
                 </aside>
 
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-                    <header className="h-14 sm:h-16 bg-[#004d00] border-b border-[#ffd200] flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20 shadow-md">
-                        <h2 className="text-sm sm:text-lg font-bold text-white uppercase tracking-wide">{activeTab === 'dashboard' ? 'Overview' : activeTab === 'profile' ? 'Profile' : 'Fee Section'}</h2>
-                        <div className="text-[10px] sm:text-xs text-[#ffd200] font-medium uppercase tracking-wider hidden sm:block">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                    <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20 shadow-sm">
+                        <h2 className="text-sm sm:text-lg font-bold text-[#004d00] uppercase tracking-wide">{activeTab === 'dashboard' ? 'Overview' : activeTab === 'profile' ? 'Profile' : 'Fee Section'}</h2>
+                        <div className="text-[10px] sm:text-xs text-gray-500 font-medium uppercase tracking-wider hidden sm:block">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
                     </header>
 
                     <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-8 space-y-4 sm:space-y-8">
-                        {/* ... (Dashboard, Profile, Generator Components - same content, just styling updated) ... */}
+                        {/* === DASHBOARD === */}
                         {activeTab === 'dashboard' && (
                             <div className="animate-fade-in space-y-8">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border-4 border-white flex items-center justify-between"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Total Challans</p><h3 className="text-xl sm:text-2xl font-bold text-gray-800">{userData?.challans?.length || 0}</h3></div><div className="p-2 bg-green-50 text-[#004d00] rounded"><Icons.Exam /></div></div>
-                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border-4 border-white flex items-center justify-between"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Pending</p><h3 className="text-xl sm:text-2xl font-bold text-orange-500">{userData?.challans?.filter(c => c.status === 'Pending Verification').length || 0}</h3></div><div className="p-2 bg-orange-50 text-orange-500 rounded"><Icons.Upload /></div></div>
-                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border-4 border-white flex items-center justify-between"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Verified</p><h3 className="text-xl sm:text-2xl font-bold text-green-600">{userData?.challans?.filter(c => c.status === 'Verified').length || 0}</h3></div><div className="p-2 bg-green-50 text-green-600 rounded"><Icons.View /></div></div>
+                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Total Challans</p><h3 className="text-xl sm:text-2xl font-bold text-[#004d00]">{userData?.challans?.length || 0}</h3></div><div className="p-3 bg-green-50 text-[#004d00] rounded-full"><Icons.Exam /></div></div>
+                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Pending</p><h3 className="text-xl sm:text-2xl font-bold text-orange-500">{userData?.challans?.filter(c => c.status === 'Pending Verification').length || 0}</h3></div><div className="p-3 bg-orange-50 text-orange-500 rounded-full"><Icons.Upload /></div></div>
+                                    <div className="bg-white p-3 sm:p-5 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition"><div><p className="text-xs text-gray-400 font-bold uppercase mb-1">Verified</p><h3 className="text-xl sm:text-2xl font-bold text-green-600">{userData?.challans?.filter(c => c.status === 'Verified').length || 0}</h3></div><div className="p-3 bg-green-50 text-green-600 rounded-full"><Icons.View /></div></div>
                                 </div>
 
-                                <div className="bg-white rounded-lg shadow-sm border-4 border-white overflow-hidden">
-                                    <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100"><h3 className="font-bold text-[#004d00] text-xs sm:text-sm uppercase tracking-wide">Recent Activity</h3></div>
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                    <div className="px-5 sm:px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2"><Icons.List /><h3 className="font-bold text-[#004d00] text-sm uppercase tracking-wide">Recent Activity</h3></div>
                                     <div className="overflow-x-auto">
                                         {(!userData?.challans || userData.challans.length === 0) ? (
-                                            <div className="p-6 sm:p-8 text-center text-gray-400 text-xs">No records found.</div>
+                                            <div className="p-10 text-center text-gray-400 flex flex-col items-center"><Icons.Alert /><p className="text-sm mt-2 font-medium">No fee records found.</p></div>
                                         ) : (
-                                            <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
-                                                <thead className="bg-gray-50"><tr><th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-600 uppercase text-xs">Details</th><th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-600 uppercase text-xs">Amount</th><th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-600 uppercase text-xs">Status</th><th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-600 uppercase text-xs hidden sm:table-cell">Actions</th></tr></thead>
-                                                <tbody className="bg-white divide-y divide-gray-100">
-                                                    {userData.challans.map((c) => (
-                                                        <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                                                            <td className="px-3 sm:px-6 py-2 sm:py-4"><div className="font-bold text-gray-800 text-xs uppercase">Part {c.part} Exam Fee</div><div className="text-[9px] sm:text-[10px] text-gray-400 mt-0.5 font-mono">{c.challanNo} | {c.statusType}</div></td>
-                                                            <td className="px-3 sm:px-6 py-2 sm:py-4"><span className="font-mono font-bold text-gray-700 text-xs">Rs.{c.amount}</span></td>
-                                                            <td className="px-3 sm:px-6 py-2 sm:py-4"><span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wide ${c.status === 'Verified' ? 'bg-green-100 text-green-700' : c.status === 'Pending Verification' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>{c.status}</span></td>
-                                                            <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs font-bold flex items-center gap-2 sm:gap-3 hidden sm:table-cell">
-                                                                <button onClick={() => handleDownloadPdf(c)} className="text-[#004d00] hover:underline flex items-center gap-1"><Icons.Download /> <span className="hidden sm:inline">PDF</span></button>
-                                                                {c.status === 'Verified' ? (
-                                                                    <button onClick={() => handleViewReceipt(c.receiptImageUrl)} className="text-green-600 hover:underline flex items-center gap-1"><Icons.View /> <span className="hidden sm:inline">RECEIPT</span></button>
-                                                                ) : (c.hasDownloaded && (
-                                                                    <button onClick={() => openUploadModal(c.id)} className="bg-[#004d00] text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded hover:bg-[#003800] flex items-center gap-1 shadow-sm transition-all"><Icons.Upload /> <span className="hidden sm:inline">UPLOAD</span></button>
-                                                                ))}
-                                                            </td>
-                                                            {/* Mobile Actions */}
-                                                            <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs font-bold flex items-center gap-2 sm:hidden">
-                                                                <button onClick={() => handleDownloadPdf(c)} className="text-[#004d00] hover:underline flex items-center gap-1"><Icons.Download /></button>
-                                                                {c.status === 'Verified' ? (
-                                                                    <button onClick={() => handleViewReceipt(c.receiptImageUrl)} className="text-green-600 hover:underline flex items-center gap-1"><Icons.View /></button>
-                                                                ) : (c.hasDownloaded && (
-                                                                    <button onClick={() => openUploadModal(c.id)} className="bg-[#004d00] text-white px-2 py-1 rounded hover:bg-[#003800] flex items-center gap-1 shadow-sm transition-all"><Icons.Upload /></button>
-                                                                ))}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                            <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm"><thead className="bg-white"><tr><th className="px-4 sm:px-6 py-3 text-left font-bold text-gray-500 uppercase tracking-wider text-[10px] sm:text-xs">Details</th><th className="px-4 sm:px-6 py-3 text-left font-bold text-gray-500 uppercase tracking-wider text-[10px] sm:text-xs">Amount</th><th className="px-4 sm:px-6 py-3 text-left font-bold text-gray-500 uppercase tracking-wider text-[10px] sm:text-xs">Status</th><th className="px-4 sm:px-6 py-3 text-left font-bold text-gray-500 uppercase tracking-wider text-[10px] sm:text-xs hidden sm:table-cell">Actions</th></tr></thead><tbody className="divide-y divide-gray-100">{userData.challans.map((c, idx) => (<tr key={c.id || idx} className="hover:bg-gray-50 transition-colors"><td className="px-4 sm:px-6 py-3 sm:py-4"><div className="font-bold text-gray-800 text-xs sm:text-sm uppercase tracking-wide">Part {c.part} Fee</div><div className="text-[9px] sm:text-[10px] text-gray-400 mt-1 font-mono tracking-wider">{c.challanNo} &bull; {c.statusType}</div></td><td className="px-4 sm:px-6 py-3 sm:py-4"><span className="font-mono font-extrabold text-[#004d00] text-xs sm:text-sm">Rs. {c.amount}</span></td><td className="px-4 sm:px-6 py-3 sm:py-4"><span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${c.status === 'Verified' ? 'bg-green-50 text-green-700 border-green-200' : c.status === 'Pending Verification' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-red-50 text-red-700 border-red-200'}`}>{c.status}</span></td><td className="px-4 sm:px-6 py-3 sm:py-4 text-xs font-bold flex items-center gap-2 sm:gap-3 hidden sm:flex"><button onClick={() => handleDownloadPdf(c)} className="text-gray-500 hover:text-[#004d00] flex items-center gap-1.5 transition-colors bg-gray-100 px-3 py-1.5 rounded-lg"><Icons.Download /> <span>PDF</span></button>{c.status === 'Verified' ? (<button onClick={() => handleViewReceipt(c.receiptImageUrl)} className="text-green-600 hover:text-green-800 flex items-center gap-1.5 transition-colors bg-green-50 px-3 py-1.5 rounded-lg"><Icons.View /> <span>RECEIPT</span></button>) : (c.hasDownloaded && (<button onClick={() => openUploadModal(c.id)} className="bg-[#004d00] text-white px-3 py-1.5 rounded-lg hover:bg-[#003800] flex items-center gap-1.5 shadow-sm transition-all"><Icons.Upload /> <span>UPLOAD</span></button>))}</td><td className="px-4 sm:px-6 py-3 sm:py-4 text-xs font-bold flex items-center gap-2 sm:hidden"><button onClick={() => handleDownloadPdf(c)} className="text-gray-500 hover:text-[#004d00] flex items-center gap-1.5 transition-colors bg-gray-100 p-2 rounded-lg"><Icons.Download /></button>{c.status === 'Verified' ? (<button onClick={() => handleViewReceipt(c.receiptImageUrl)} className="text-green-600 hover:text-green-800 flex items-center gap-1.5 transition-colors bg-green-50 p-2 rounded-lg"><Icons.View /></button>) : (c.hasDownloaded && (<button onClick={() => openUploadModal(c.id)} className="bg-[#004d00] text-white p-2 rounded-lg hover:bg-[#003800] flex items-center gap-1.5 shadow-sm transition-all"><Icons.Upload /></button>))}</td></tr>))}</tbody></table>
                                         )}
                                     </div>
                                 </div>
                             </div>
                         )}
 
+                  {/* === PROFILE === */}
                         {activeTab === 'profile' && (
-                            <div className="bg-white rounded-lg shadow-sm border-4 border-white animate-fade-in overflow-hidden mb-10">
-                                <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                                    <h3 className="font-bold text-[#004d00] text-sm uppercase tracking-wide">
-                                        {isEditing ? 'Edit Profile' : 'Personal Details'}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 animate-fade-in overflow-hidden mb-2">
+                                <div className="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 className="font-bold text-[#004d00] text-sm uppercase tracking-wide flex items-center gap-2">
+                                        <Icons.Profile /> {isEditing ? 'Update Personal Details' : 'Personal Information'}
                                     </h3>
-                                    <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded border">ID: {user.email.split('@')[0]}</span>
+                                    <span className="text-[9px] font-bold text-gray-500 bg-white px-2.5 py-1 rounded-full border border-gray-200 shadow-sm tracking-wider">ID: {user.email.split('@')[0]}</span>
                                 </div>
 
                                 {isEditing ? (
-                                    <form onSubmit={saveProfile} className="p-8">
-                                        {/* --- EXPLICIT FORM FIELDS --- */}
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Prefix</label><select name="prefix" value={studentForm.prefix} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none bg-white text-sm"><option value="M">M</option><option value="F">F</option></select></div>
-                                            <div className="md:col-span-2"><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Full Name</label><input type="text" name="fullName" value={studentForm.fullName} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Surname</label><input type="text" name="surname" value={studentForm.surname} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Father Name</label><input type="text" name="fatherName" value={studentForm.fatherName} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider text-[#1a4d0f]">Email Address</label><input type="email" name="email" value={studentForm.email} onChange={handleFormChange} placeholder="example@gmail.com" className="w-full px-3 py-2 border border-[#1a4d0f] rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all text-sm bg-green-50/20" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Date of Birth</label><input type="date" name="dob" value={studentForm.dob} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
+                                    <form onSubmit={saveProfile} className="p-4 sm:p-5 flex flex-col justify-center min-h-[calc(100vh-180px)]">
+                                        {/* 4-Columns Grid banaya hai taake vertical space bache */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-3">
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Prefix</label><select name="prefix" value={studentForm.prefix} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-xs font-medium"><option value="M">M</option><option value="F">F</option></select></div>
+                                            <div className="col-span-2"><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Full Name</label><input type="text" name="fullName" value={studentForm.fullName} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none uppercase text-xs font-bold text-gray-800 bg-gray-50" placeholder="NAME" /></div>
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Surname / Caste</label><input type="text" name="surname" value={studentForm.surname} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none uppercase text-xs font-bold text-gray-800 bg-gray-50" placeholder="SURNAME" /></div>
                                             
-                                            {/* --- GENDER SELECTOR (ADDED) --- */}
+                                            <div className="col-span-2"><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Father's Name</label><input type="text" name="fatherName" value={studentForm.fatherName} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none uppercase text-xs font-bold text-gray-800 bg-gray-50" placeholder="FATHER'S NAME" /></div>
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Date of Birth</label><input type="date" name="dob" value={studentForm.dob} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none uppercase text-xs font-medium text-gray-800 bg-gray-50" /></div>
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Gender</label><select name="gender" value={studentForm.gender} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-xs font-medium"><option value="MALE">MALE</option><option value="FEMALE">FEMALE</option></select></div>
+                                            
+                                            <div className="col-span-2"><label className="block text-[9px] font-bold text-blue-600 uppercase mb-0.5 tracking-wider">Email Address</label><input type="email" name="email" value={studentForm.email} onChange={handleFormChange} placeholder="student@example.com" className="w-full px-3 py-1.5 border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 outline-none text-xs font-medium bg-blue-50/30 text-blue-900" /></div>
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Mobile No.</label><input type="text" name="mobileNo" value={studentForm.mobileNo} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none text-xs font-mono font-bold text-gray-800 bg-gray-50" placeholder="03XX" /></div>
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Zip Code</label><input type="text" name="zipCode" value={studentForm.zipCode} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none text-xs font-mono font-bold text-gray-800 bg-gray-50" placeholder="69230" /></div>
+                                            
+                                            <div><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">City / Taluka</label><select name="city" value={studentForm.city} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-xs font-medium"><option value="MITHI">MITHI</option><option value="ISLAMKOT">ISLAMKOT</option><option value="CHACHRO">CHACHRO</option><option value="DIPLO">DIPLO</option><option value="NAGARPARKAR">NAGARPARKAR</option><option value="KALOI">KALOI</option><option value="DAHLI">DAHLI</option></select></div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Gender</label>
-                                                <select name="gender" value={studentForm.gender} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none bg-white text-sm">
-                                                    <option value="MALE">MALE</option>
-                                                    <option value="FEMALE">FEMALE</option>
+                                                <label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">District</label>
+                                                <select name="district" value="THARPARKAR" className="w-full px-3 py-1.5 border border-gray-200 rounded outline-none bg-gray-100 text-gray-500 font-bold text-xs cursor-not-allowed" disabled>
+                                                    <option value="THARPARKAR">THARPARKAR</option>
                                                 </select>
                                             </div>
-
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Mobile No</label><input type="text" name="mobileNo" value={studentForm.mobileNo} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Zip Code</label><input type="text" name="zipCode" value={studentForm.zipCode} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none transition-all uppercase text-sm" /></div>
-                                            <div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">City</label><select name="city" value={studentForm.city} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none bg-white text-sm"><option value="MITHI">MITHI</option><option value="ISLAMKOT">ISLAMKOT</option><option value="CHACHRO">CHACHRO</option></select></div>
-                                            <div className="md:col-span-2"><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">District</label><select name="district" value={studentForm.district} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none bg-white text-sm"><option value="THARPARKAR">THARPARKAR</option><option value="UMERKOT">UMERKOT</option></select></div>
-                                            <div className="md:col-span-3"><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Postal Address</label><textarea name="homeAddress" rows="2" value={studentForm.homeAddress} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-[#1a4d0f] outline-none uppercase text-sm"></textarea></div>
+                                            <div className="col-span-2"><label className="block text-[9px] font-bold text-gray-500 uppercase mb-0.5 tracking-wider">Postal Address</label><input type="text" name="homeAddress" value={studentForm.homeAddress} onChange={handleFormChange} className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none uppercase text-xs font-medium text-gray-800 bg-gray-50" placeholder="ADDRESS..." /></div>
                                         </div>
 
-                                        <div className="mt-8 flex justify-end gap-3">
-                                            <button type="button" onClick={handleCancelEdit} className="px-6 py-2 rounded font-bold text-xs uppercase tracking-wide text-gray-500 hover:bg-gray-100 transition-all">Cancel</button>
-                                            <button type="submit" className="bg-[#1a4d0f] hover:bg-[#12360a] text-white px-6 py-2 rounded font-bold shadow-md transition-all text-xs uppercase tracking-wide">Save Changes</button>
+                                        <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end gap-2">
+                                            <button type="button" onClick={handleCancelEdit} className="px-6 py-2 rounded font-bold text-[10px] uppercase tracking-wider text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all">Cancel</button>
+                                            <button type="submit" className="bg-[#004d00] hover:bg-[#003800] text-[#ffd200] px-6 py-2 rounded font-extrabold shadow-sm transition-all text-[10px] uppercase tracking-wider flex items-center gap-1.5"><Icons.Check className="w-3 h-3"/> Save</button>
                                         </div>
                                     </form>
                                 ) : (
-                                    <div className="p-8 flex flex-col items-center relative">
-                                        <div className="flex flex-col items-center mb-8">
-                                            <h4 className="font-bold text-xl text-gray-800 uppercase">{studentForm.fullName || 'Student Name'}</h4>
-                                            <p className="text-sm text-gray-500 font-mono mt-1">{user.email.split('@')[0]}</p>
-                                        </div>
-                                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 w-full max-w-2xl overflow-hidden mb-8">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 divide-y divide-gray-100 md:divide-y-0 md:divide-x">
-                                                 <div className="p-5 space-y-4">
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Full Name</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.fullName}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Father Name</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.fatherName}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Date of Birth</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.dob}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Gender</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.gender}</p></div>
-                                                 </div>
-                                                 <div className="p-5 space-y-4 bg-gray-50/50">
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Mobile No</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.mobileNo}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-[#004d00] uppercase tracking-wider mb-1">Email Address</h5><p className="text-sm font-bold text-[#004d00] lowercase">{studentForm.email || 'No Email Added'}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">City / District</h5><p className="text-sm font-bold text-gray-700 uppercase">{studentForm.city} / {studentForm.district}</p></div>
-                                                     <div><h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Address</h5><p className="text-sm font-bold text-gray-700 uppercase break-words">{studentForm.homeAddress}</p></div>
-                                                 </div>
+                                    <div className="p-4 sm:p-6 flex flex-col items-center relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-50/50 via-white to-white justify-center min-h-[calc(100vh-180px)]">
+                                        <div className="flex flex-col items-center w-full mb-5">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white shadow-md bg-[#004d00] text-[#ffd200] flex items-center justify-center text-3xl font-extrabold uppercase mb-2 relative z-10">
+                                                {studentForm.profileImage ? <img src={studentForm.profileImage} className="w-full h-full object-cover rounded-full" /> : studentForm.fullName?.charAt(0) || 'U'}
+                                            </div>
+                                            <h4 className="font-extrabold text-xl sm:text-2xl text-gray-800 uppercase text-center tracking-tight">{studentForm.fullName || 'NO NAME PROVIDED'}</h4>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="px-2.5 py-0.5 bg-green-100 text-green-800 rounded-full text-[9px] font-bold uppercase tracking-widest">{studentForm.gender || 'GENDER'}</span>
+                                                <span className="px-2.5 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-[9px] font-bold uppercase tracking-widest font-mono">ID: {user.email.split('@')[0]}</span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-4">
-                                            <button onClick={() => setIsEditing(true)} className="bg-[#004d00] hover:bg-[#003800] text-white px-8 py-3 rounded-lg font-bold shadow-md transition-all text-xs uppercase tracking-wide flex items-center gap-2">
-                                                <Icons.Edit /> Edit Profile
-                                            </button>
+
+                                        <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-5">
+                                            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3 hover:border-green-200 transition-colors">
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-gray-50 rounded-lg text-gray-400"><Icons.Users className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Father's Name</h5><p className="text-xs font-bold text-gray-800 uppercase">{studentForm.fatherName || '-'}</p></div></div>
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-gray-50 rounded-lg text-gray-400"><Icons.Profile className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Surname / Caste</h5><p className="text-xs font-bold text-gray-800 uppercase">{studentForm.surname || '-'}</p></div></div>
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-gray-50 rounded-lg text-gray-400"><Icons.Exam className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Date of Birth</h5><p className="text-xs font-bold text-gray-800 font-mono">{studentForm.dob || '-'}</p></div></div>
+                                            </div>
+
+                                            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3 hover:border-green-200 transition-colors">
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-gray-50 rounded-lg text-gray-400"><Icons.Dashboard className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Mobile Number</h5><p className="text-xs font-bold text-gray-800 font-mono tracking-wider">{studentForm.mobileNo || '-'}</p></div></div>
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-blue-50 rounded-lg text-blue-500"><Icons.View className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-blue-500 uppercase tracking-widest mb-0.5">Email Address</h5><p className="text-xs font-bold text-blue-900">{studentForm.email || 'Not Provided'}</p></div></div>
+                                                <div className="flex items-start gap-2.5"><div className="p-1.5 bg-gray-50 rounded-lg text-gray-400"><Icons.List className="w-4 h-4"/></div><div><h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Location</h5><p className="text-xs font-bold text-gray-800 uppercase">{studentForm.city ? `${studentForm.city}, THARPARKAR` : '-'}</p></div></div>
+                                            </div>
+
+                                            <div className="md:col-span-2 bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm hover:border-green-200 transition-colors">
+                                                <h5 className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Complete Postal Address</h5>
+                                                <p className="text-xs font-bold text-gray-800 uppercase leading-snug bg-gray-50 p-2.5 rounded-lg border border-gray-100">{studentForm.homeAddress || 'No address provided yet.'}</p>
+                                            </div>
                                         </div>
+
+                                        <button onClick={() => setIsEditing(true)} className="bg-[#004d00] hover:bg-[#003800] text-[#ffd200] px-8 py-2.5 rounded-full font-extrabold shadow-md hover:shadow-lg transition-all text-[10px] uppercase tracking-widest flex items-center gap-2 transform hover:-translate-y-0.5">
+                                            <Icons.Edit className="w-4 h-4"/> Edit Details
+                                        </button>
                                     </div>
                                 )}
                             </div>
                         )}
 
+                        {/* === GENERATOR === */}
                         {activeTab === 'generator' && (
-                            <div className="max-w-xl mx-auto mt-10">
-                                <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden animate-fade-in">
-                                    <div className="bg-[#004d00] px-6 py-5 text-center"><h3 className="text-lg font-bold text-white tracking-wide uppercase">Fee Challan Generator</h3></div>
-                                    <div className="p-8 space-y-6">
-                                        <form onSubmit={(e) => { e.preventDefault(); generateChallan(e.target.part.value, e.target.batch.value, e.target.status.value); }}>
-                                            <div className="space-y-4">
+                            <div className="max-w-md mx-auto flex flex-col justify-center h-full min-h-[calc(100vh-180px)]">
+                                <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in w-full">
+                                    <div className="bg-[#004d00] px-4 py-4 text-center border-b-4 border-[#ffd200] relative overflow-hidden">
+                                        <Icons.Exam className="absolute -right-2 -bottom-2 w-16 h-16 text-white opacity-10 transform rotate-12" />
+                                        <h3 className="text-lg font-extrabold text-white tracking-widest uppercase relative z-10">Fee Challan Generator</h3>
+                                        <p className="text-[#ffd200] text-[10px] mt-0.5 font-medium tracking-wide relative z-10">Generate semester exam fee voucher</p>
+                                    </div>
+                                    <div className="p-5 sm:p-6">
+                                        <form onSubmit={(e) => { e.preventDefault(); generateChallan(e.target.part.value, e.target.batch.value, e.target.status.value); }} className="space-y-4">
+                                            
+                                            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-lg">
+                                                <p className="text-[11px] text-blue-800 font-medium leading-tight">
+                                                    <strong className="text-blue-900 uppercase tracking-wider mr-1">Note:</strong> 
+                                                    Generate challan only for the parts you have to appear in. Duplicate challans are restricted.
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-3">
                                                 <div>
-                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Select Part</label>
-                                                    <select name="part" className="w-full px-4 py-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-sm"><option value="I">Part I (First Year)</option><option value="II">Part II (Second Year)</option><option value="III">Part III (Third Year)</option><option value="IV">Part IV (Fourth Year)</option></select>
+                                                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1">Select Program Part</label>
+                                                    <div className="relative">
+                                                        <select name="part" className="w-full pl-3 pr-8 py-2.5 border-2 border-gray-200 rounded-lg appearance-none focus:border-[#004d00] outline-none bg-gray-50 text-xs font-bold text-gray-700 cursor-pointer">
+                                                            <option value="I">Part I (First Year)</option>
+                                                            <option value="II">Part II (Second Year)</option>
+                                                            <option value="III">Part III (Third Year)</option>
+                                                            <option value="IV">Part IV (Fourth Year)</option>
+                                                        </select>
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                            <Icons.View className="w-4 h-4"/> 
+                                                        </div>
+                                                    </div>
                                                 </div>
+
                                                 <div>
-                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Select Batch</label>
-                                                    <select name="batch" className="w-full px-4 py-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-sm"><option value="2k22">Batch 2k22</option><option value="2k23">Batch 2k23</option><option value="2k24">Batch 2k24</option><option value="2k25">Batch 2k25</option><option value="2k26">Batch 2k26</option></select>
+                                                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1">Select Enrolled Batch</label>
+                                                    <div className="relative">
+                                                        <select name="batch" className="w-full pl-3 pr-8 py-2.5 border-2 border-gray-200 rounded-lg appearance-none focus:border-[#004d00] outline-none bg-gray-50 text-xs font-bold text-gray-700 cursor-pointer">
+                                                            <option value="2k22">Batch 2k22</option>
+                                                            <option value="2k23">Batch 2k23</option>
+                                                            <option value="2k24">Batch 2k24</option>
+                                                            <option value="2k25">Batch 2k25</option>
+                                                            <option value="2k26">Batch 2k26</option>
+                                                        </select>
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                            <Icons.GradCap className="w-4 h-4"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
+
                                                 <div>
-                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Resident Status</label>
-                                                    <select name="status" className="w-full px-4 py-3 border border-gray-300 rounded focus:ring-1 focus:ring-[#004d00] outline-none bg-gray-50 text-sm"><option value="Hosteller">Hosteller (Boarder) - Rs.1300</option><option value="Non-Hosteller">Non-Hosteller (Day Scholar) - Rs.900</option></select>
+                                                    <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1">Select Resident Status</label>
+                                                    <div className="relative">
+                                                        <select name="status" className="w-full pl-3 pr-8 py-2.5 border-2 border-gray-200 rounded-lg appearance-none focus:border-[#004d00] outline-none bg-gray-50 text-xs font-bold text-gray-700 cursor-pointer">
+                                                            <option value="Hosteller">Hosteller (Boarder) - Rs. 1300/-</option>
+                                                            <option value="Non-Hosteller">Non-Hosteller (Day Scholar) - Rs. 900/-</option>
+                                                        </select>
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                            <Icons.Users className="w-4 h-4"/>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <button type="submit" className="w-full mt-6 bg-[#004d00] hover:bg-[#003800] text-white font-bold py-3 rounded shadow-lg transition-all text-xs uppercase tracking-wide flex justify-center items-center gap-2"><Icons.Download /> Generate PDF</button>
+
+                                            <button type="submit" className="w-full mt-2 bg-[#004d00] hover:bg-[#003800] text-[#ffd200] font-extrabold py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all text-xs uppercase tracking-widest flex justify-center items-center gap-2">
+                                                <Icons.Download className="w-4 h-4" /> Generate PDF Challan
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -523,23 +1179,25 @@ const App = () => {
                     </main>
                     
                     {/* Modals */}
-                    {showUploadModal && (<div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-lg shadow-xl w-full max-w-sm overflow-hidden"><div className="bg-gray-50 px-5 py-4 border-b border-gray-100 flex justify-between items-center"><h3 className="font-bold text-sm text-gray-700 uppercase">Upload Receipt</h3><button onClick={() => setShowUploadModal(false)} className="text-gray-400 hover:text-red-500"><Icons.Close /></button></div><form onSubmit={handleUploadSubmit} className="p-5 space-y-4"><div className="bg-blue-50 text-blue-800 text-[10px] p-3 rounded border border-blue-100">Upload stamped bank copy (JPG/PNG). Max 800KB.</div><div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Amount Paid</label><input type="text" value={uploadForm.amount} onChange={(e) => setUploadForm({ ...uploadForm, amount: e.target.value })} className="w-full px-3 py-2 border rounded text-sm" required /></div><div><label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Date</label><input type="date" value={uploadForm.date} onChange={(e) => setUploadForm({ ...uploadForm, date: e.target.value })} className="w-full px-3 py-2 border rounded text-sm" required /></div><div className="border-2 border-dashed border-gray-300 rounded p-4 text-center hover:bg-gray-50 cursor-pointer relative"><Icons.Upload /><span className="text-xs text-gray-400 block mt-1">Select Image</span><input type="file" accept="image/jpeg, image/png" onChange={handleUploadFileChange} className="absolute inset-0 opacity-0 cursor-pointer" required /></div><button type="submit" disabled={uploading} className="w-full bg-[#1a4d0f] text-white font-bold py-2 rounded shadow-sm text-xs uppercase flex justify-center items-center">{uploading ? <Icons.Spinner /> : 'SUBMIT'}</button></form></div></div>)}
-                    {showReceiptModal && (<div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-lg shadow-xl max-w-2xl w-full h-[80vh] flex flex-col"><div className="p-3 border-b flex justify-between items-center"><h3 className="font-bold text-sm text-gray-600 uppercase">Receipt Proof</h3><button onClick={() => setShowReceiptModal(false)} className="text-gray-400 hover:text-red-500"><Icons.Close /></button></div><div className="flex-1 bg-black/5 p-4 flex justify-center items-center overflow-auto"><img src={receiptUrl} alt="Receipt" className="max-h-full object-contain shadow" /></div></div></div>)}
+                    {showUploadModal && (<div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100"><div className="bg-[#004d00] px-5 py-4 border-b-4 border-[#ffd200] flex justify-between items-center"><h3 className="font-extrabold text-sm text-white uppercase tracking-widest">Upload Receipt</h3><button onClick={() => setShowUploadModal(false)} className="text-white hover:text-[#ffd200] transition"><Icons.Close /></button></div><form onSubmit={handleUploadSubmit} className="p-6 space-y-5"><div className="bg-blue-50 text-blue-800 text-[11px] p-3 rounded-lg border border-blue-100 font-medium">Upload <strong className="text-blue-900">stamped bank copy</strong> (JPG/PNG). Max size 800KB.</div><div><label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Amount Paid (Rs.)</label><input type="text" value={uploadForm.amount} onChange={(e) => setUploadForm({ ...uploadForm, amount: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-bold text-gray-800 focus:border-[#004d00] outline-none" required placeholder="e.g. 900" /></div><div><label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Deposit Date</label><input type="date" value={uploadForm.date} onChange={(e) => setUploadForm({ ...uploadForm, date: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-bold text-gray-800 focus:border-[#004d00] outline-none" required /></div><div className="border-2 border-dashed border-[#004d00] bg-green-50/50 rounded-xl p-6 text-center hover:bg-green-50 cursor-pointer relative transition group"><div className="text-[#004d00] group-hover:scale-110 transition-transform duration-300 flex justify-center mb-2"><Icons.Upload /></div><span className="text-xs font-bold text-[#004d00] block">Click to Select Image</span><span className="text-[10px] text-gray-400 block mt-1">JPG, PNG only</span><input type="file" accept="image/jpeg, image/png" onChange={handleUploadFileChange} className="absolute inset-0 opacity-0 cursor-pointer" required /></div><button type="submit" disabled={uploading} className="w-full bg-[#004d00] hover:bg-[#003800] text-[#ffd200] font-extrabold py-3.5 rounded-lg shadow-md transition-colors text-xs uppercase tracking-widest flex justify-center items-center mt-2">{uploading ? <span className="flex items-center gap-2"><Icons.Spinner /> UPLOADING...</span> : 'SUBMIT RECEIPT'}</button></form></div></div>)}
+                    {showReceiptModal && (<div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full h-[85vh] flex flex-col overflow-hidden"><div className="bg-[#004d00] p-4 border-b-4 border-[#ffd200] flex justify-between items-center"><h3 className="font-extrabold text-sm text-white uppercase tracking-widest">Bank Receipt Proof</h3><button onClick={() => setShowReceiptModal(false)} className="text-white hover:text-[#ffd200] bg-white/10 p-1.5 rounded-lg transition"><Icons.Close /></button></div><div className="flex-1 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-100 p-6 flex justify-center items-center overflow-auto"><div className="bg-white p-2 rounded-lg shadow-lg"><img src={receiptUrl} alt="Receipt" className="max-h-[70vh] object-contain rounded border border-gray-200" /></div></div></div></div>)}
                 </div>
 
                 {/* --- MOBILE NAVIGATION --- */}
-                <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 md:hidden flex justify-around p-3 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+                <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 md:hidden flex justify-around items-center p-2 z-40 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
                     {[
-                        { id: 'dashboard', icon: Icons.Dashboard },
-                        { id: 'profile', icon: Icons.Profile },
-                        { id: 'generator', icon: Icons.Exam },
+                        { id: 'dashboard', label: 'Home', icon: Icons.Dashboard },
+                        { id: 'profile', label: 'Profile', icon: Icons.Profile },
+                        { id: 'generator', label: 'Fee', icon: Icons.Exam },
                     ].map((item) => (
-                        <button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex flex-col items-center ${activeTab === item.id ? 'text-[#1a4d0f]' : 'text-gray-400'}`}>
-                            <item.icon className="w-6 h-6 mb-1" />
+                        <button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex flex-col items-center justify-center w-16 h-12 rounded-lg transition-all ${activeTab === item.id ? 'text-[#004d00] bg-green-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
+                            <item.icon className={`w-5 h-5 mb-0.5 ${activeTab === item.id ? 'scale-110 transition-transform' : ''}`} />
+                            <span className={`text-[9px] font-bold tracking-wider ${activeTab === item.id ? 'text-[#004d00]' : 'text-gray-400'}`}>{item.label}</span>
                         </button>
                     ))}
-                    <button onClick={handleLogout} className="text-red-500 flex flex-col items-center">
-                        <Icons.Logout className="w-6 h-6 mb-1" />
+                    <button onClick={handleLogout} className="flex flex-col items-center justify-center w-16 h-12 rounded-lg text-red-500 hover:bg-red-50 transition-all">
+                        <Icons.Logout className="w-5 h-5 mb-0.5" />
+                        <span className="text-[9px] font-bold tracking-wider">Exit</span>
                     </button>
                 </nav>
             </div>

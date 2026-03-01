@@ -81,7 +81,7 @@ export default function App() {
                 {/* 2. Main Content Box */}
                 <main className="grow w-full max-w-screen-2xl mx-auto px-4 md:px-8 mt-6 md:mt-10">
                     <div 
-                        className="bg-white rounded-2xl shadow-xl w-full overflow-hidden min-h-[600px] p-4 md:p-8"
+                        className="bg-white rounded-2xl shadow-xl w-full overflow-hidden min-h-[600px] p-4 md:p-8 border-4 border-[#ffd200]"
                         style={{ boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)' }}
                     >
                         {renderContent()}
