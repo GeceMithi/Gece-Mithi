@@ -1,47 +1,135 @@
 import { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
 
 const useResourceData = () => {
     const [resources, setResources] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch all resources from Firebase
+    // Fetch all resources from Firebase - UNIFIED SYSTEM
     const fetchResources = async () => {
         try {
+            console.log('🔄 Starting to fetch resources from UNIFIED Firebase collection...');
             setLoading(true);
             setError(null);
             
-            const resourcesCollection = collection(db, 'resources');
-            const q = query(resourcesCollection, orderBy('addedDate', 'desc'));
+            console.log('📊 Creating collection reference for academic_data...');
+            const unifiedCollection = collection(db, 'academic_data');
+            const q = query(unifiedCollection, orderBy('createdAt', 'desc'));
+            
+            console.log('🔍 Executing query...');
             const querySnapshot = await getDocs(q);
+            console.log('📋 Query snapshot received, docs count:', querySnapshot.docs.length);
             
-            const resourcesData = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const resourcesData = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                console.log(`📄 Processing UNIFIED Firebase doc: ${doc.id}`, data);
+                
+                const mappedData = {
+                    id: doc.id,
+                    ...data,
+                    // Map back to admin panel format
+                    title: data.title || data.subject,
+                    category: data.category, // Keep original category: 'study-materials', 'notes', 'past-papers'
+                    // Ensure required fields for admin panel
+                    fileUrl: data.fileUrl || '',
+                    description: data.description || '',
+                    class: data.class || (data.year && data.semester ? `Year ${data.year} Semester ${data.semester}` : '')
+                };
+                
+                console.log(`🔄 Mapped to admin format:`, mappedData);
+                return mappedData;
+            });
             
+            console.log('💾 UNIFIED Resources data processed:', resourcesData);
             setResources(resourcesData);
+            console.log('✅ Resources state updated successfully');
         } catch (err) {
-            console.error('Error fetching resources:', err);
-            setError('Failed to fetch resources data');
+            console.error('❌ Error fetching resources:', err);
+            setError('Failed to fetch resources data: ' + err.message);
         } finally {
             setLoading(false);
+            console.log('🏁 Fetch completed, loading set to false');
         }
     };
 
-    // Add new resource to Firebase
+    // Add new resource to Firebase - UNIFIED SYSTEM
     const addResource = async (resourceData) => {
         try {
             setError(null);
+            console.log(`➕ Admin panel adding resource (UNIFIED):`, resourceData);
             
-            const resourcesCollection = collection(db, 'resources');
-            const docRef = await addDoc(resourcesCollection, {
-                ...resourceData,
-                addedDate: new Date().toISOString(),
-                updatedDate: new Date().toISOString()
+            // Parse year and semester from class field
+            let year = 1, semester = 1;
+            if (resourceData.class) {
+                const classParts = resourceData.class.split(' ');
+                console.log(`📋 Class parts:`, classParts);
+                if (classParts.length >= 4) {
+                    year = parseInt(classParts[1]) || 1;
+                    semester = parseInt(classParts[3]) || 1;
+                }
+            }
+            
+            // UNIFIED DATA STRUCTURE - Single array for all categories
+            const unifiedData = {
+                // Core identification
+                category: resourceData.category, // Keep original category: 'study-materials', 'notes', 'past-papers'
+                type: resourceData.category === 'study-materials' ? 'outline' : 
+                      resourceData.category === 'notes' ? 'notes' : 
+                      resourceData.category === 'past-papers' ? 'past_paper' : 'other',
+                
+                // Academic information
+                title: resourceData.title,
+                subject: resourceData.title, // For consistency
+                year: year,
+                semester: semester,
+                class: resourceData.class,
+                courseCode: resourceData.courseCode || '',
+                description: resourceData.description || '',
+                
+                // Media information
+                fileUrl: resourceData.fileUrl || '',
+                fileType: resourceData.fileType || 'pdf',
+                
+                // Metadata
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                isActive: true
+            };
+            
+            console.log(`🔄 Mapped to UNIFIED format:`, unifiedData);
+            console.log(`🔍 Specific fileUrl check:`, {
+                originalFileUrl: resourceData.fileUrl,
+                mappedFileUrl: unifiedData.fileUrl,
+                fileUrlType: typeof unifiedData.fileUrl,
+                fileUrlLength: unifiedData.fileUrl ? unifiedData.fileUrl.length : 0,
+                fileUrlValue: `"${unifiedData.fileUrl}"`,
+                isEmpty: unifiedData.fileUrl === '' || unifiedData.fileUrl === null || unifiedData.fileUrl === undefined
             });
+            
+            // Save to UNIFIED collection
+            console.log(`💾 Saving to Firebase academic_data collection...`);
+            const unifiedCollection = collection(db, 'academic_data');
+            const docRef = await addDoc(unifiedCollection, unifiedData);
+            
+            console.log(`✅ Successfully saved to UNIFIED Firebase collection with ID: ${docRef.id}`);
+            
+            // Verify the saved data by reading it back
+            console.log(`🔍 Verifying saved data...`);
+            const savedDoc = await getDoc(doc(db, 'academic_data', docRef.id));
+            if (savedDoc.exists()) {
+                const savedData = savedDoc.data();
+                console.log(`📄 Saved document data:`, savedData);
+                console.log(`🔗 Saved fileUrl:`, {
+                    value: savedData.fileUrl,
+                    type: typeof savedData.fileUrl,
+                    length: savedData.fileUrl ? savedData.fileUrl.length : 0,
+                    isEmpty: savedData.fileUrl === '' || savedData.fileUrl === null || savedData.fileUrl === undefined
+                });
+            } else {
+                console.error(`❌ Could not verify saved document - document not found`);
+            }
             
             // Refresh resources list
             await fetchResources();
@@ -54,43 +142,253 @@ const useResourceData = () => {
         }
     };
 
-    // Update existing resource in Firebase
+    // Smart update: Remove old data and add new data
     const updateResource = async (resourceId, resourceData) => {
         try {
             setError(null);
+            console.log(`🔄 Smart update starting for: ${resourceData.title || resourceData.subject}`);
             
-            const resourceDoc = doc(db, 'resources', resourceId);
-            await updateDoc(resourceDoc, {
-                ...resourceData,
-                updatedDate: new Date().toISOString()
+            // Map admin panel fields to media_files structure
+            const firebaseCategory = resourceData.category === 'study-materials' ? 'outline' : 
+                                  resourceData.category === 'notes' ? 'notes' : 
+                                  resourceData.category === 'past-papers' ? 'past_paper' : 'other';
+            
+            const year = resourceData.year || 1;
+            const semester = resourceData.semester || 1;
+            const subject = resourceData.title || resourceData.subject;
+            
+            console.log(`📋 Update details:`, {
+                category: firebaseCategory,
+                year,
+                semester,
+                subject,
+                resourceId
             });
+            
+            // STEP 1: Remove existing data for this subject/year/semester
+            await removeExistingData(firebaseCategory, year, semester, subject, resourceId);
+            
+            // STEP 2: Add new data
+            const newResourceData = {
+                category: firebaseCategory,
+                fileUrl: resourceData.fileUrl,
+                subject: subject,
+                year: year,
+                semester: semester,
+                courseCode: resourceData.courseCode || '',
+                description: resourceData.description || '',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            console.log(`➕ Adding new data:`, newResourceData);
+            const docRef = await addDoc(collection(db, 'media_files'), newResourceData);
+            console.log(`✅ New data added with ID: ${docRef.id}`);
             
             // Refresh resources list
             await fetchResources();
             
-            return { success: true };
+            return { success: true, newId: docRef.id };
         } catch (err) {
-            console.error('Error updating resource:', err);
+            console.error('❌ Error updating resource:', err);
             setError('Failed to update resource');
             return { success: false, error: err.message };
         }
     };
 
-    // Delete resource from Firebase
+    // Remove existing data before update
+    const removeExistingData = async (category, year, semester, subject, excludeResourceId = null) => {
+        try {
+            console.log(`🗑️ Removing existing data for: ${category}, Year ${year}, Sem ${semester}, Subject: ${subject}`);
+            
+            const mediaCollection = collection(db, 'media_files');
+            const q = query(
+                mediaCollection,
+                where('category', '==', category),
+                where('year', '==', year),
+                where('semester', '==', semester),
+                where('subject', '==', subject)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            console.log(`📋 Found ${querySnapshot.docs.length} existing records to remove`);
+            
+            const deletePromises = [];
+            querySnapshot.docs.forEach(doc => {
+                // Don't delete the current record if we're updating it
+                if (excludeResourceId && doc.id !== excludeResourceId) {
+                    console.log(`🗑️ Removing old record: ${doc.id}`);
+                    deletePromises.push(deleteDoc(doc(db, 'media_files', doc.id)));
+                }
+            });
+            
+            if (deletePromises.length > 0) {
+                await Promise.all(deletePromises);
+                console.log(`✅ Removed ${deletePromises.length} old records`);
+            } else {
+                console.log(`ℹ️ No old records to remove`);
+            }
+            
+        } catch (err) {
+            console.error('❌ Error removing existing data:', err);
+            throw err;
+        }
+    };
+
+    // Remove entire semester data
+    const removeSemesterData = async (category, year, semester) => {
+        try {
+            console.log(`🗑️ Removing entire semester: ${category}, Year ${year}, Sem ${semester}`);
+            
+            const mediaCollection = collection(db, 'media_files');
+            const q = query(
+                mediaCollection,
+                where('category', '==', category),
+                where('year', '==', year),
+                where('semester', '==', semester)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            console.log(`📋 Found ${querySnapshot.docs.length} records to remove`);
+            
+            const deletePromises = [];
+            querySnapshot.docs.forEach(doc => {
+                console.log(`🗑️ Removing semester record: ${doc.id}`);
+                deletePromises.push(deleteDoc(doc(db, 'media_files', doc.id)));
+            });
+            
+            if (deletePromises.length > 0) {
+                await Promise.all(deletePromises);
+                console.log(`✅ Removed entire semester data (${deletePromises.length} records)`);
+            }
+            
+            // Refresh resources list
+            await fetchResources();
+            
+            return { success: true, removedCount: deletePromises.length };
+        } catch (err) {
+            console.error('❌ Error removing semester data:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
+    // Delete resource from Firebase - UNIFIED SYSTEM
     const deleteResource = async (resourceId) => {
         try {
             setError(null);
+            console.log(`🗑️ Deleting resource from UNIFIED Firebase: ${resourceId}`);
             
-            const resourceDoc = doc(db, 'resources', resourceId);
-            await deleteDoc(resourceDoc);
+            // First check if document exists
+            const resourceDoc = doc(db, 'academic_data', resourceId);
+            console.log(`🔍 Checking if document exists: ${resourceId}`);
+            
+            try {
+                const docSnap = await getDoc(resourceDoc);
+                if (docSnap.exists()) {
+                    console.log(`📄 Document found:`, docSnap.data());
+                    
+                    // Delete from UNIFIED collection
+                    await deleteDoc(resourceDoc);
+                    console.log(`✅ Successfully deleted resource: ${resourceId}`);
+                    
+                    // Verify deletion
+                    const docSnapAfter = await getDoc(resourceDoc);
+                    if (!docSnapAfter.exists()) {
+                        console.log(`✅ Verified deletion - document no longer exists in Firebase`);
+                    } else {
+                        console.warn(`⚠️ Deletion verification failed - document still exists`);
+                    }
+                } else {
+                    console.warn(`⚠️ Document not found in Firebase: ${resourceId}`);
+                    return { success: false, error: 'Document not found' };
+                }
+            } catch (checkError) {
+                console.error(`❌ Error checking document existence:`, checkError);
+                return { success: false, error: checkError.message };
+            }
             
             // Refresh resources list
             await fetchResources();
             
             return { success: true };
         } catch (err) {
-            console.error('Error deleting resource:', err);
+            console.error('❌ Error deleting resource:', err);
             setError('Failed to delete resource');
+            return { success: false, error: err.message };
+        }
+    };
+
+    // Delete ALL resources from Firebase - UNIFIED SYSTEM
+    const deleteAllResources = async () => {
+        try {
+            setError(null);
+            console.log(`🗑️ Deleting ALL resources from UNIFIED Firebase...`);
+            
+            const unifiedCollection = collection(db, 'academic_data');
+            const q = query(unifiedCollection);
+            const querySnapshot = await getDocs(q);
+            
+            console.log(`📋 Found ${querySnapshot.docs.length} documents to delete`);
+            
+            if (querySnapshot.docs.length === 0) {
+                console.log(`ℹ️ No documents to delete`);
+                return { success: true, deletedCount: 0 };
+            }
+            
+            const deletePromises = [];
+            querySnapshot.docs.forEach(doc => {
+                console.log(`🗑️ Deleting document: ${doc.id} - ${doc.data().title || doc.data().subject}`);
+                deletePromises.push(deleteDoc(doc(db, 'academic_data', doc.id)));
+            });
+            
+            await Promise.all(deletePromises);
+            console.log(`✅ Successfully deleted ${deletePromises.length} documents from UNIFIED Firebase`);
+            
+            // Refresh resources list
+            await fetchResources();
+            
+            return { success: true, deletedCount: deletePromises.length };
+        } catch (err) {
+            console.error('❌ Error deleting all resources:', err);
+            setError('Failed to delete all resources');
+            return { success: false, error: err.message };
+        }
+    };
+
+    // Save course structure for outline section
+    const saveCourseStructure = async (resourceData) => {
+        try {
+            console.log(`🏗️ Saving course structure for outline section:`, resourceData);
+            
+            // Parse year and semester from class field
+            let year = 1, semester = 1;
+            if (resourceData.class) {
+                const classParts = resourceData.class.split(' ');
+                if (classParts.length >= 4) {
+                    year = parseInt(classParts[1]) || 1;
+                    semester = parseInt(classParts[3]) || 1;
+                }
+            }
+            
+            const structureData = {
+                subject: resourceData.title,
+                year: year,
+                semester: semester,
+                courseCode: resourceData.courseCode || '',
+                category: resourceData.category === 'study-materials' ? 'outline' : resourceData.category,
+                createdAt: new Date()
+            };
+            
+            console.log(`🔄 Mapped to structure format:`, structureData);
+            
+            // Save to academic_structure collection
+            const structureCollection = collection(db, 'academic_structure');
+            const docRef = await addDoc(structureCollection, structureData);
+            
+            console.log(`✅ Course structure saved with ID: ${docRef.id}`);
+            return { success: true, id: docRef.id };
+        } catch (err) {
+            console.error('❌ Error saving course structure:', err);
             return { success: false, error: err.message };
         }
     };
@@ -101,17 +399,25 @@ const useResourceData = () => {
             setLoading(true);
             setError(null);
             
-            const resourcesCollection = collection(db, 'resources');
+            // Map admin panel category to Firebase category
+            const firebaseCategory = category === 'study-materials' ? 'outline' : 
+                                   category === 'notes' ? 'notes' : 
+                                   category === 'past-papers' ? 'past_paper' : 'other';
+            
+            const mediaCollection = collection(db, 'media_files');
             const q = query(
-                resourcesCollection, 
-                where('category', '==', category),
-                orderBy('addedDate', 'desc')
+                mediaCollection, 
+                where('category', '==', firebaseCategory),
+                orderBy('createdAt', 'desc')
             );
             const querySnapshot = await getDocs(q);
             
             const resourcesData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
+                // Map back to admin panel format
+                title: doc.data().subject || doc.data().title,
+                category: category
             }));
             
             return resourcesData;
@@ -194,13 +500,16 @@ const useResourceData = () => {
         resources,
         loading,
         error,
-        fetchResources,
         addResource,
         updateResource,
         deleteResource,
+        deleteAllResources,
+        removeSemesterData,
+        saveCourseStructure,
+        getSectionData,
+        getResourceStatistics,
         getResourcesByCategory,
-        searchResources,
-        getResourceStatistics
+        searchResources
     };
 };
 

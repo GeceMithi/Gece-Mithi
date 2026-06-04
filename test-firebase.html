@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Test</title>
+</head>
+<body>
+    <h1>Firebase Test</h1>
+    <button onclick="addSampleData()">Add Sample Data</button>
+    <button onclick="fetchData()">Fetch Data</button>
+    <div id="output"></div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9a0hN0oH-lLRebHBCautHFs8tmivb7Wk",
+            authDomain: "gecemithi-a9f02.firebaseapp.com",
+            projectId: "gecemithi-a9f02",
+            storageBucket: "gecemithi-a9f02.appspot.com",
+            messagingSenderId: "431640633767",
+            appId: "1:431640633767:web:a3ad5ff964b9e820189682"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.addSampleData = async function() {
+            try {
+                const sampleResources = [
+                    {
+                        title: 'Mathematics Study Guide',
+                        category: 'study-materials',
+                        subject: 'Mathematics',
+                        class: 'Class 10',
+                        description: 'Comprehensive study guide for Class 10 Mathematics',
+                        fileUrl: 'https://example.com/math-guide.pdf',
+                        fileType: 'pdf',
+                        addedDate: new Date().toISOString(),
+                        updatedDate: new Date().toISOString()
+                    },
+                    {
+                        title: 'Physics Past Paper 2023',
+                        category: 'past-papers',
+                        subject: 'Physics',
+                        class: 'Class 12',
+                        description: 'Annual examination paper 2023',
+                        fileUrl: 'https://example.com/physics-paper-2023.pdf',
+                        fileType: 'pdf',
+                        addedDate: new Date().toISOString(),
+                        updatedDate: new Date().toISOString()
+                    }
+                ];
+
+                console.log('Adding sample data to Firebase...');
+                
+                for (const resource of sampleResources) {
+                    const docRef = await addDoc(collection(db, 'resources'), resource);
+                    console.log('Document added with ID: ', docRef.id);
+                }
+                
+                document.getElementById('output').innerHTML = 'Sample data added successfully!';
+            } catch (error) {
+                console.error('Error adding sample data: ', error);
+                document.getElementById('output').innerHTML = 'Error: ' + error.message;
+            }
+        };
+
+        window.fetchData = async function() {
+            try {
+                console.log('Fetching data from Firebase...');
+                const q = query(collection(db, 'resources'), orderBy('addedDate', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                const resources = [];
+                querySnapshot.forEach((doc) => {
+                    resources.push({ id: doc.id, ...doc.data() });
+                });
+                
+                console.log('Fetched resources:', resources);
+                document.getElementById('output').innerHTML = `
+                    <h3>Fetched ${resources.length} resources:</h3>
+                    <pre>${JSON.stringify(resources, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+                document.getElementById('output').innerHTML = 'Error: ' + error.message;
+            }
+        };
+    </script>
+</body>
+</html>

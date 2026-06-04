@@ -1,9 +1,9 @@
 // Data Backup Service for Firebase Firestore
 // This service handles automatic backups and data retention
 
-import { db } from '../firebase';
+import { db } from '../firebase/firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
-import { backupConfig, retentionPolicy, monitoringConfig } from '../firebaseConfig';
+import { backupConfig, retentionPolicy, monitoringConfig } from '../config/cloudinaryConfig';
 
 class DataBackupService {
   constructor() {
