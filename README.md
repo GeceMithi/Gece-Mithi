@@ -1,16 +1,29 @@
-# React + Vite
+# GECE Mithi - Official Website 🎓
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the repository for the official website of the **Government Elementary College of Education (GECE) Mithi** (`gecemithi.pk`). 
 
-Currently, two official plugins are available:
+This platform was meticulously designed and developed from the ground up to provide a modern, responsive, and highly dynamic digital experience for students, faculty, and administrators.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features
+*   **Dynamic Architecture:** Built with interactive components, replacing traditional static HTML for efficient data management and real-time updates.
+*   **Student & Faculty Portals:** Secure, dynamic hubs for accessing academic resources, managing data, and facilitating smooth communication.
+*   **Responsive UI/UX:** Fully optimized and visually engaging design tailored for seamless performance across all devices.
+*   **Modern Media Integration:** Clean graphic assets and video elements optimized for web performance.
 
-## React Compiler
+## 🛠️ Technologies Used
+*   **Frontend:** React.js, Vite, Tailwind CSS
+*   **Backend & Cloud:** Node.js, Express.js
+*   **Storage & Media:** Cloudinary / Firebase
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 👨‍💻 Design & Development
+This entire project—spanning from the initial UI/UX conceptualization to full-stack deployment and maintenance—was exclusively designed and developed by:
 
-## Expanding the ESLint configuration
+**Sandesh Khemani Suther**  
+*Full Stack MERN Web Developer | Graphic Designer | Video Editor*
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+*   **Location:** Mithi, Sindh, Pakistan
+*   **GitHub:** [https://github.com/SandeshKhemaniSuther]
+*   **Portfolio:** [....]
+
+---
+*© 2026 GECE Mithi. Designed and Developed by Sandesh Khemani Suther.*
