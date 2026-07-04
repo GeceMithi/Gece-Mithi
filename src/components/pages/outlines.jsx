@@ -37,14 +37,14 @@ const Outline = () => {
                             {yearBlock.semesters.map(semester => (
                                 <div 
                                     key={semester.semester} 
-                                    className="semester-card bg-white p-6 rounded-2xl shadow-md transition duration-300 border border-[#ffd200] hover:shadow-lg hover:translate-y-[-2px]"
+                                    className="semester-card bg-white p-6 rounded-2xl shadow-md transition duration-300 border border-[#ffd200] hover:shadow-lg hover:-translate-y-0.5"
                                 >
                                     <h3 className="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">
                                         Semester {semester.semester}
                                     </h3>
                                     <ul className="space-y-3">
                                         {semester.courses.map((course, i) => (
-                                            <li key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg transition duration-200 hover:bg-indigo-50">
+                                            <li key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg border border-[#ffd200] transition duration-200 hover:bg-indigo-50">
                                                 <span className="text-gray-700 font-medium mb-2 sm:mb-0">
                                                     {course.name}
                                                 </span>

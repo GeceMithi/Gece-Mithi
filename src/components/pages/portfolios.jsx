@@ -15,11 +15,10 @@ const Portfolio = () => {
                   Welcome to <span className="text-green-700"> B.Ed. (Hons)</span>
                 </h1>
                 
-                {/* Now this will work because 'title' is defined above */}
-                <p className="mt-4 text-xl font-medium text-gray-600 content-entry-animation" style={{ animationDelay: '0.3s' }}>
+                <h2 className="mt-4 text-2xl md:text-3xl font-extrabold text-gray-800 content-entry-animation" style={{ animationDelay: '0.3s' }}>
                     {title}
-                </p>
-                <p className="mt-8 text-lg text-gray-500 content-entry-animation" style={{ animationDelay: '0.4s' }}>
+                </h2>
+                <p className="mt-8 text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 content-entry-animation" style={{ animationDelay: '0.4s' }}>
                     {descriptionText}
                 </p>
             </div>
@@ -33,20 +32,28 @@ const Portfolio = () => {
                 {portfolioData.map((item, index) => (
                     <div 
                         key={item.title} 
-                        className="p-6 bg-white rounded-2xl shadow-xl border border-[#ffd200] transition-all duration-300 hover:shadow-2xl hover:border-indigo-400 hover:translate-y-[-4px] content-entry-animation flex flex-col items-start"
+                        className="p-6 bg-linear-to-br from-green-50 via-yellow-50 to-green-100 rounded-2xl shadow-lg border-2 border-yellow-400 transition-all duration-300 hover:shadow-2xl hover:border-yellow-500 hover:-translate-y-1 content-entry-animation flex flex-col items-start"
                         style={{ animationDelay: `${0.1 + (index * 0.15)}s` }}
                     >
                         <Icon path={item.iconPath} className="w-8 h-8 text-indigo-600 mb-4" />
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                        <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
                             {item.title}
                         </h3>
-                        <p className="text-sm text-gray-600 flex-grow mb-4">
+                        <p className="text-sm text-gray-600 grow mb-4">
                             {item.description}
                         </p>
-                        <DownloadLink 
-                            linkUrl={item.downloadLink} 
-                            buttonText="Download" 
-                        />
+                        <div className="space-y-3 w-full">
+                            <DownloadLink 
+                                linkUrl={item.downloadLink} 
+                                buttonText="Download" 
+                            />
+                            {item.handout && (
+                                <DownloadLink
+                                    linkUrl={item.handout}
+                                    buttonText="Handout"
+                                />
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>

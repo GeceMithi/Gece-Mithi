@@ -6,6 +6,33 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import menlogo from '../../assets/staff/menlogo.png';
 import womenlogo from '../../assets/staff/womenlogo.png';
 
+// Batch series in descending order (2k20, 2k19, 2k18, 2k17...)
+const BATCH_SERIES = ['2k20', '2k19', '2k18', '2k17', '2k16', '2k15', '2k14', '2k13', '2k12', '2k11', '2k10'];
+
+// Function to sort stories by batch in descending order
+const sortStoriesByBatch = (storiesData) => {
+    return storiesData.sort((a, b) => {
+        const batchA = a.batch?.toLowerCase() || '';
+        const batchB = b.batch?.toLowerCase() || '';
+
+        // Find index in BATCH_SERIES
+        const indexA = BATCH_SERIES.findIndex(batch => batch.toLowerCase() === batchA);
+        const indexB = BATCH_SERIES.findIndex(batch => batch.toLowerCase() === batchB);
+
+        // If batch is in the series, use its index
+        if (indexA !== -1 && indexB !== -1) {
+            return indexA - indexB; // Both in series, sort by position
+        }
+
+        // If only one is in series, it comes first
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+
+        // If neither is in series, sort alphabetically descending
+        return batchB.localeCompare(batchA);
+    });
+};
+
 const DynamicSuccessStories = () => {
     const [stories, setStories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -41,7 +68,10 @@ const DynamicSuccessStories = () => {
             });
             
             console.log(`✅ Fetched ${storiesData.length} success stories`);
-            setStories(storiesData);
+            
+            // Sort stories by batch in descending order
+            const sortedStories = sortStoriesByBatch(storiesData);
+            setStories(sortedStories);
             setLoading(false);
             
         } catch (error) {
@@ -69,7 +99,7 @@ const DynamicSuccessStories = () => {
             <div className="content-entry-animation max-w-7xl mx-auto px-4 py-8">
                 <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#004d00]"></div>
-                    <p className="mt-4 text-gray-600">Loading success stories...</p>
+                    <p className="mt-4 text-gray-600">Loading Stories of Successful Students...</p>
                 </div>
             </div>
         );
@@ -105,7 +135,7 @@ const DynamicSuccessStories = () => {
                             <span className="text-xl">←</span>
                             <span>Back to Stories</span>
                         </button>
-                        <h1 className="text-3xl font-bold">Success Story</h1>
+                        <h1 className="text-3xl font-bold">Stories of Successful Students</h1>
                         <p className="text-white/80 mt-2">Read the full journey of our alumni</p>
                     </div>
                     
@@ -173,17 +203,17 @@ const DynamicSuccessStories = () => {
         <div className="content-entry-animation max-w-7xl mx-auto px-4 py-8">
             <div className="text-center mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold text-[#004d00] mb-4">
-                    Success Stories
+                    Stories of Successful Students
                 </h1>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Inspiring journeys of our alumni who have made significant contributions to education and society
+                    Discover the inspiring journeys of our graduates who are making significant contributions to education and society
                 </p>
             </div>
 
             {stories.length === 0 ? (
                 <div className="text-center py-12">
                     <div className="text-gray-500 text-lg">
-                        <p>No success stories available yet.</p>
+                        <p>No Stories of Successful Students available yet.</p>
                         <p className="text-sm mt-2">Check back soon for inspiring stories from our alumni!</p>
                     </div>
                 </div>
@@ -207,7 +237,7 @@ const DynamicSuccessStories = () => {
                                         <img 
                                             src={story.img} 
                                             alt={story.name} 
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-center rounded-full border-2 border-[#004d00] shadow-lg"
                                         />
                                     </div>
                                     <div className="absolute -inset-2 border-2 border-[#FFD700] rounded-full opacity-60"></div>

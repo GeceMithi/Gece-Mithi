@@ -92,8 +92,10 @@ export const portfolioData = [
     iconPath:
       "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
     downloadLink:
-      "https://drive.usercontent.google.com/download?id=1-D1x_vk1-tfB3NoCtxVWjis&export=download",
-    outlineLink:
+      "https://drive.usercontent.google.com/download?id=1pBx0r65Z5aexW98uGbM8ho22hzWF9IjH&export=download&authuser=0&confirm=t&uuid=5125b1ed-a96b-422a-b5ed-3165dc13ec45&at=AAINaIIGyems3J-bLZsPwVF1721O:1781091344169",
+    handout:
+      "https://drive.usercontent.google.com/download?id=1EIvljzkFfoiMaacllA8by39AkDSfKI34&export=download&authuser=0&confirm=t&uuid=0ae95bab-f820-4b7b-884a-7b5c065e94f8&at=AAINaIJkGPQGbyB3Y_7Sdy1Sm2D0:1781091748210",
+       outlineLink:
       "https://drive.usercontent.google.com/download?id=1wyN09OA1AsyONFVaOiMIHd_9QU0S0wwB&export=download&authuser=2&confirm=t&uuid=c056bb3a-e2aa-470a-8fd8-e5526cf2fa66&at=ANTm3cxuP2iXfovGlOGVv5EBIhN5:1768475557358",
   },
   {
@@ -102,7 +104,9 @@ export const portfolioData = [
       "Showcases competence, achievements, and teaching skills for career advancement and job applications.",
     iconPath:
       "M21 13.25L15.75 8 13 10.75 18.25 16zm-1.1-1.1l-2.7 2.7M13.25 10.75L8 16 3 11 11.25 2.75 13.25 4.75z",
-    downloadLink: "https://drive.usercontent.google.com/download?id=1-D1x_vk1-tfB3NoCtxVWjis&export=download",
+    downloadLink: "https://drive.usercontent.google.com/download?id=1BgVuqVuYDt3tgtpX5aazfOsbzcgOymbL&export=download&authuser=0&confirm=t&uuid=fc77107e-b112-4f2d-bb14-3d59248f7bbc&at=AAINaIKILn2VeY_8x3waBImTN-zd:1781091423229",
+    handout:
+      "https://drive.usercontent.google.com/download?id=1zTcgTalZpqhBEPKAAVmATw6ZrQGcCh6h&export=download&authuser=0&confirm=t&uuid=1f4c5d3c-58fc-4592-9a43-e4a7ea69c8db&at=AAINaIJn5skWweohHBCXQunxHfZV:1781091809766",
     outlineLink:
       "https://drive.usercontent.google.com/download?id=1mxZvYdqtKp24i7B7dG2pXmYZ6Teyzzrz&export=download&authuser=2&confirm=t&uuid=12131b9f-779f-490e-8780-d6f61ae64426&at=ANTm3czU47RhcA7CHRO1pd8lZewF:1768475639087",
   },
@@ -111,7 +115,8 @@ export const portfolioData = [
     description:
       "A record of reading activities, reflections, and analyses of academic and supplementary texts.",
     iconPath: "M12 6.5v11m4-7H8M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-    downloadLink: "https://drive.usercontent.google.com/download?id=1-D1x_vk1-tfB3NoCtxVWjis&export=download",
+    downloadLink: "https://drive.usercontent.google.com/download?id=1RjUvwenLlPPVQ8A0GxHqSDDWP6ijpaEB&export=download&authuser=0&confirm=t&uuid=e0f77c59-a0f8-4e12-afcf-ebbfc0c44fcb&at=AAINaILROwGhPI1L8QMGZ2t0DSTm:1781091661910",
+    handout: "Placeholder",
     outlineLink:
       "https://drive.usercontent.google.com/download?id=1_Y3rCHZYsiWdLfFqk7RTW-xMQQoz9MSA&export=download&authuser=2&confirm=t&uuid=2c509379-d610-49f5-9b96-c4ae29f3d58e&at=ANTm3cw5n3U_TZD0N66WsBY-5tIU:1768476642982",
   },
@@ -120,7 +125,8 @@ export const portfolioData = [
     description:
       "Demonstrates specialized knowledge, advanced research, and innovation in specific educational fields.",
     iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
-    downloadLink: "https://drive.usercontent.google.com/download?id=1-D1x_vk1-tfB3NoCtxVWjis&export=download",
+    downloadLink: "Placeholder",
+    handout: "Placeholder",
     outlineLink:
       "https://drive.usercontent.google.com/download?id=18kixbCnGp1a1TlYmWiiZb2pbR6JY9owM&export=download&authuser=2&confirm=t&uuid=4bdaab46-8dd8-427e-acc4-1d7bd580f574&at=ANTm3cxRGMNpPstBFK540_yFRGg7:1768476715775",
   },
@@ -129,7 +135,8 @@ export const portfolioData = [
     description:
       "A comprehensive collection of research work, thesis, and academic investigations conducted during the program.",
     iconPath: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-    downloadLink: "https://drive.usercontent.google.com/download?id=1-D1x_vk1-tfB3NoCtxVWjis&export=download",
+    downloadLink: "https://drive.usercontent.google.com/download?id=1sHwMVHsf-r9O3knhxXnMo6yVcgJR696c&export=download&authuser=0&confirm=t&uuid=eff8aa60-745a-41d3-bead-1bd10cf6bb23&at=AAINaIKUIM-dbHOJAr6I8XCoxKLU:1781091874989",
+    handout: "Placeholder",
     outlineLink:
       "https://drive.usercontent.google.com/download?id=1HXY1DVDq3r4ImalmWCp7vYArPZHy5U9B&export=download&authuser=2&confirm=t&uuid=8c7068dc-4e88-4b67-8406-5557d623aaf3&at=ANTm3cxvJIYNz9EeTqBA6NyDBa_6:1768476788283",
   },

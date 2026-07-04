@@ -1,10 +1,9 @@
 // resources.jsx - Merged Portfolio and Tools (Static Data)
 import React from 'react';
 import { portfolioData, toolsData } from '../../utils/data';
-import { Icon } from '../services/uicomponents';
+import { Icon, DownloadLink } from '../services/uicomponents';
 
 const Resources = () => {
-    const actionButtonClass = "inline-flex items-center justify-center gap-2 bg-green-600 text-white border border-green-600 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors font-semibold text-sm";
 
     return (
         <>
@@ -12,10 +11,10 @@ const Resources = () => {
                 <h1 className="text-4xl font-extrabold text-yellow-400 tracking-tighter content-entry-animation sm:text-5xl">
                     Welcome to <span className="text-green-700"> B.Ed. (Hons)</span>
                 </h1>
-                <p className="mt-4 text-xl font-medium text-gray-600 content-entry-animation" style={{ animationDelay: '0.3s' }}>
-                    Resources
-                </p>
-                <p className="mt-8 text-lg text-gray-500 content-entry-animation" style={{ animationDelay: '0.4s' }}>
+                <h2 className="mt-4 text-1xl md:text-2xl font-extrabold text-gray-800 content-entry-animation" style={{ animationDelay: '0.3s' }}>
+                    Practicum Porfolio & Teaching Tools
+                </h2>
+                <p className="mt-8 text-base md:text-lg text-gray-600 max-w-1xl mx-auto leading-relaxed px-4 content-entry-animation" style={{ animationDelay: '0.4s' }}>
                     Access teaching tools and portfolio templates for your B.Ed journey.
                 </p>
             </div>
@@ -26,47 +25,29 @@ const Resources = () => {
                     {portfolioData.map((portfolio, index) => (
                         <div
                             key={portfolio.title}
-                            className={`bg-white rounded-2xl shadow-xl border-2 border-yellow-400 overflow-hidden hover:shadow-2xl hover:border-yellow-500 hover:translate-y-[-4px] transition-all duration-300 flex flex-col items-start content-entry-animation ${index === portfolioData.length - 1 ? 'lg:col-start-2 lg:col-end-4 lg:max-w-[460px] lg:justify-self-center' : ''}`}
+                            className={`bg-linear-to-br from-green-50 via-yellow-50 to-green-100 rounded-2xl shadow-lg border-2 border-yellow-400 overflow-hidden hover:shadow-2xl hover:border-yellow-500 hover:-translate-y-1 transition-all duration-300 flex flex-col items-start content-entry-animation ${index === portfolioData.length - 1 ? 'lg:col-start-2 lg:col-end-4 lg:max-w-[460px] lg:justify-self-center' : ''}`}
                             style={{ animationDelay: `${0.1 + (index * 0.15)}s` }}
                         >
-                            <div className="p-6 bg-linear-to-r from-green-50 to-yellow-50 w-full flex-grow">
-                                <h3 className="text-xl font-bold text-gray-800 mb-6">
+                            <div className="p-6 bg-transparent w-full grow">
+                                <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-6">
                                     {portfolio.title}
                                 </h3>
                                 <div className="space-y-4">
                                     {portfolio.outlineLink && (
-                                        <div className="grid grid-cols-[1fr_auto] items-center gap-4 bg-white p-4 rounded-2xl border border-green-100 shadow-sm">
+                                        <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-yellow-400 shadow-sm min-w-0">
                                             <span className="text-base font-semibold text-gray-800">Outline</span>
-                                            <a
-                                                href={portfolio.outlineLink}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className={actionButtonClass}
-                                            >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                                </svg>
-                                                Download
-                                            </a>
+                                            <DownloadLink linkUrl={portfolio.outlineLink} buttonText="Download" />
                                         </div>
                                     )}
-                                    <div className="grid grid-cols-[1fr_auto] items-center gap-4 bg-white p-4 rounded-2xl border border-green-100 shadow-sm">
+                                    {portfolio.handout && (
+                                        <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-yellow-400 shadow-sm min-w-0">
+                                            <span className="text-base font-semibold text-gray-800">Handout</span>
+                                            <DownloadLink linkUrl={portfolio.handout} buttonText="Download" />
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-yellow-400 shadow-sm min-w-0">
                                         <span className="text-base font-semibold text-gray-800">Portfolio</span>
-                                        <a
-                                            href={portfolio.downloadLink}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className={actionButtonClass}
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="7 10 12 15 17 10"></polyline>
-                                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                                            </svg>
-                                            Download
-                                        </a>
+                                        <DownloadLink linkUrl={portfolio.downloadLink} buttonText="Download" />
                                     </div>
                                 </div>
                             </div>

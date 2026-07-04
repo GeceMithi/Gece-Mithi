@@ -10,12 +10,13 @@ const PastPaper = () => {
             
             {/* --- Header Section --- */}
             <div className="text-center mb-12 pt-6">
-                <span className="block text-[#FFD700] font-bold tracking-widest uppercase text-xs md:text-sm mb-2">
-                    Welcome to B.Ed. (Hons)
-                </span>
-                <h1 className="text-3xl md:text-5xl font-extrabold text-yellow-500 tracking-tight mb-4">
-                    Past <span className="text-[#004d00]">Examination Papers</span>
+                 <h1 className="text-4xl font-extrabold text-yellow-500 tracking-tighter content-entry-animation sm:text-5xl">
+                    Welcome to <span className="text-green-700"> B.Ed. (Hons)</span>
                 </h1>
+                <br />
+                <h2 className="text-1xl md:text-2xl font-extrabold text-gray-800 tracking-tight mb-4">
+                    Past Examination Papers
+                </h2>
                 <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
                     Access previous year question papers for all B.Ed (Hons) subjects across 8 semesters.
                 </p>
@@ -64,7 +65,7 @@ const PastPaper = () => {
                                             href={sem.link}
                                             target="_blank" 
                                             rel="noopener noreferrer" 
-                                            className="w-full flex items-center justify-center gap-2 bg-red-600 text-white hover:text-blue border border-[#ffd200] hover:border-[#004d00] py-2.5 rounded-lg text-sm font-bold transition-all"
+                                            className="w-full flex items-center justify-center gap-2 bg-green-600 text-white border border-[#ffd200] hover:bg-red-600 hover:border-red-400 py-2.5 rounded-lg text-sm font-bold transition-all"
                                         >
                                             <Icon path="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" className="w-4 h-4" />
                                             Download
