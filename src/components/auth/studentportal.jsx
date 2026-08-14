@@ -36,6 +36,7 @@ import BatchSection from '../admin/BatchSection';
 import DynamicContentManager from '../features/DynamicContentManager';
 import CloudinaryMediaManager from '../features/CloudinaryMediaManager';
 import SuccessStoriesManagement from '../admin/successstoriesmanagement';
+import ResourceManagement from '../admin/resourcemanagement';
 
 // NOTE: PDF notices are converted to high-quality images and uploaded to Cloudinary
 
@@ -61,6 +62,7 @@ const Icons = {
     Logout: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>,
     Bell: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>,
     Trophy: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>,
+    Database: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7M4 7a2 2 0 012-2h12a2 2 0 012 2M4 7l8 5 8-5"></path></svg>,
     Menu: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>,
     Check: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>,
     Alert: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>,
@@ -715,8 +717,12 @@ const App = () => {
                             <div className="bg-white p-1 rounded-full mb-3 shadow-md w-20 h-20 flex items-center justify-center border-[3px] border-[#ffd200]">
                                 <img src="/logo1.png" alt="Logo" className="h-[90%] w-[90%] object-contain" />
                             </div>
-                            <h2 className="text-white font-extrabold tracking-wider text-lg mt-1">ADMIN PANEL</h2>
-                            <p className="text-[#00ff80] text-xs font-bold tracking-widest mt-1">GECE MITHI</p>
+                            {activeTab !== 'contentManager' && (
+                                <>
+                                    <h2 className="text-white font-extrabold tracking-wider text-lg mt-1">ADMIN PANEL</h2>
+                                    <p className="text-[#00ff80] text-xs font-bold tracking-widest mt-1">GECE MITHI</p>
+                                </>
+                            )}
                         </div>
 
                         {/* Buttons Section */}
@@ -724,32 +730,32 @@ const App = () => {
                             {/* Main Admin Section */}
                             <p className="text-xs font-bold text-[#ffd200] uppercase tracking-wider px-4">Admin</p>
 
-                            {[
-                                { id: 'dashboard', label: 'ALL STUDENTS', icon: Icons.Dashboard },
-                                { id: 'verifiedList', label: 'VERIFIED LIST', icon: Icons.List },
-                                { id: 'noticeBoard', label: 'NOTICE BOARD', icon: Icons.Bell },
-                                { id: 'successStories', label: 'SUCCESS STORIES', icon: Icons.Trophy },
-                                { id: 'contentManager', label: 'STAFF MANAGER', icon: Icons.Users },
-                            ].map((item) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setActiveTab(item.id)}
-                                    className={`w-full flex items-center px-4 py-3.5 rounded-lg text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5
-                                        ${activeTab === item.id
-                                            ? item.id === 'contentManager'
-                                                ? 'bg-[#ffeb3b] text-black border-3 border-[#f57c00] shadow-lg'
-                                                : 'bg-[#ffd200] text-[#004d00] border-2 border-[#FFD700]'
-                                            : 'bg-[#003b00] text-white border border-[#005a00] hover:bg-[#002a00] hover:border-[#004d00]'
-                                        }`}
-                                >
-                                    <item.icon className="w-5 h-5 mr-3" />
-                                    {item.label}
-                                </button>
-                            ))}
+                                {[
+                                    { id: 'dashboard', label: 'ALL STUDENTS', icon: Icons.Dashboard },
+                                    { id: 'verifiedList', label: 'VERIFIED LIST', icon: Icons.List },
+                                    { id: 'noticeBoard', label: 'NOTICE BOARD', icon: Icons.Bell },
+                                    { id: 'successStories', label: 'SUCCESS STORIES', icon: Icons.Trophy },
+                                    { id: 'contentManager', label: 'STAFF MANAGER', icon: Icons.Users },
+                                    { id: 'resourceManagement', label: 'RESOURCE MANAGEMENT', icon: Icons.Database },
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveTab(item.id)}
+                                        className={`w-full flex items-center px-4 py-3.5 rounded-lg text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5
+                                            ${activeTab === item.id
+                                                ? item.id === 'contentManager'
+                                                    ? 'bg-[#ffeb3b] text-black border-3 border-[#f57c00] shadow-lg'
+                                                    : 'bg-[#ffd200] text-[#004d00] border-2 border-[#FFD700]'
+                                                : 'bg-[#003b00] text-white border border-[#005a00] hover:bg-[#002a00] hover:border-[#004d00]'
+                                            }`}
+                                    >
+                                        <item.icon className="w-5 h-5 mr-3" />
+                                        {item.label}
+                                    </button>
+                                ))}
 
                             {/* Divider */}
                             <div className="border-t border-[#006400] my-2"></div>
-
                         </nav>
 
                         {/* --- LOGOUT BUTTON AT BOTTOM --- */}
@@ -1140,6 +1146,12 @@ const App = () => {
                             </div>
                         )}
 
+                        {/* 6. RESOURCE MANAGEMENT */}
+                        {activeTab === 'resourceManagement' && (
+                            <div className="animate-fade-in w-full">
+                                <ResourceManagement />
+                            </div>
+                        )}
 
                     </div >
                 </main >
