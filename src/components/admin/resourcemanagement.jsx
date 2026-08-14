@@ -392,7 +392,11 @@ const ResourceManagement = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <div className="bg-white rounded-xl shadow-md p-6">
                     <h1 className="text-3xl font-bold text-gray-800">Resource Management</h1>
+<<<<<<< HEAD
                     <p className="text-gray-600 mt-2">Select a format (Outline or Notes), enter your details, and click save button</p>
+=======
+                    <p className="text-gray-600 mt-2">Choose Outline or Notes, fill the details, and save the file directly to Firebase.</p>
+>>>>>>> ca4af02882417038537f12c021d6eea7180ea2bb
                 </div>
 
                 {/* Section Toggle Buttons */}
