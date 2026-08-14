@@ -258,18 +258,6 @@ const DynamicContentManager = () => {
         description: "",
         fileUrl: "",
     });
-    const [pastPaperForm, setPastPaperForm] = useState({
-        title: "",
-        year: "",
-        subject: "",
-        fileUrl: "",
-    });
-    const [toolsForm, setToolsForm] = useState({
-        name: "",
-        description: "",
-        url: "",
-        category: "",
-    });
 
     const [trainingForm, setTrainingForm] = useState({
         prefix: "Mr.",
@@ -302,8 +290,6 @@ const DynamicContentManager = () => {
     const [volunteerTeachers, setVolunteerTeachers] = useState([]);
     const [outlines, setOutlines] = useState([]);
     const [notes, setNotes] = useState([]);
-    const [pastPapers, setPastPapers] = useState([]);
-    const [tools, setTools] = useState([]);
     const [inserviceTrainings, setInserviceTrainings] = useState([]);
 
     const [batches, setBatches] = useState([]);
@@ -315,17 +301,14 @@ const DynamicContentManager = () => {
 
     const [activeTab, setActiveTab] = useState("faculty");
     const [loading, setLoading] = useState(false);
-    // Separate loading states for slider uploads to avoid global-loading conflicts
     const [loadingHomeSlider, setLoadingHomeSlider] = useState(false);
     const [loadingAboutSlide, setLoadingAboutSlide] = useState(false);
-    const [activeVolunteerBatch, setActiveVolunteerBatch] = useState(null);
-    const [deleteConfirm, setDeleteConfirm] = useState(null); // { collectionName, id, label }
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     // Initialize backup service on component mount
     useEffect(() => {
         backupService.initialize();
 
-        // Cleanup on unmount
         return () => {
             backupService.stop();
         };
@@ -386,10 +369,6 @@ const DynamicContentManager = () => {
         }
     };
 
-    const deleteStudentFromBatch = (year, studentId) => {
-        setDeleteConfirm({ action: 'deleteStudent', year, studentId, label: `student from Batch ${year}` });
-    };
-
     const updateStudentStatus = async (year, studentId, newStatus) => {
         setLoading(true);
         try {
@@ -415,10 +394,6 @@ const DynamicContentManager = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const deleteBatchYear = (year) => {
-        setDeleteConfirm({ action: 'deleteBatch', year, label: `Batch ${year}` });
     };
 
     const createNewBatch = async (year) => {
@@ -453,10 +428,8 @@ const DynamicContentManager = () => {
 
     // Fetch all dynamic data from Firebase
     const fetchAllData = async () => {
-        console.log("Fetching all dynamic data...");
         try {
             const facultySnap = await getDocs(collection(db, "faculty"));
-            console.log("Faculty documents:", facultySnap.size);
             setFaculty(
                 facultySnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
@@ -464,7 +437,6 @@ const DynamicContentManager = () => {
             const visitingFacultySnap = await getDocs(
                 collection(db, "visiting_faculty"),
             );
-            console.log("Visiting faculty documents:", visitingFacultySnap.size);
             setVisitingFaculty(
                 visitingFacultySnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
@@ -472,7 +444,6 @@ const DynamicContentManager = () => {
             const nonTeachingSnap = await getDocs(
                 collection(db, "non_teaching_staff"),
             );
-            console.log("Non-teaching staff documents:", nonTeachingSnap.size);
             setNonTeachingStaff(
                 nonTeachingSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
@@ -480,43 +451,26 @@ const DynamicContentManager = () => {
             const volunteerTeachersSnap = await getDocs(
                 collection(db, "volunteer_teachers"),
             );
-            console.log("Volunteer teachers documents:", volunteerTeachersSnap.size);
             setVolunteerTeachers(
                 volunteerTeachersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
 
             const outlinesSnap = await getDocs(collection(db, "outlines"));
-            console.log("Outlines documents:", outlinesSnap.size);
             setOutlines(
                 outlinesSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
 
             const notesSnap = await getDocs(collection(db, "notes"));
-            console.log("Notes documents:", notesSnap.size);
             setNotes(
                 notesSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
 
-            const pastPapersSnap = await getDocs(collection(db, "past_papers"));
-            console.log("Past papers documents:", pastPapersSnap.size);
-            setPastPapers(
-                pastPapersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-            );
-
-            const toolsSnap = await getDocs(collection(db, "tools"));
-            console.log("Tools documents:", toolsSnap.size);
-            setTools(
-                toolsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-            );
-
             const inserviceTrainingsSnap = await getDocs(collection(db, "inservice_trainings"));
-            console.log("Inservice trainings documents:", inserviceTrainingsSnap.size);
             setInserviceTrainings(
                 inserviceTrainingsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
             );
 
             const batchesSnap = await getDocs(collection(db, "batches"));
-            console.log("Batches documents:", batchesSnap.size);
             const batchesList = batchesSnap.docs
                 .map((d) => ({
                     year: normalizeBatchYear(d.id),
@@ -524,21 +478,17 @@ const DynamicContentManager = () => {
                 }))
                 .sort((a, b) => Number(a.year) - Number(b.year));
             setBatches(batchesList);
-            console.log("All data fetched successfully!");
 
-            // Fetch settings for home slides
             const settingsSnap = await getDocs(collection(db, "settings"));
             if (!settingsSnap.empty) {
                 const homeSliderDoc = settingsSnap.docs.find(doc => doc.id === "home_slider");
                 if (homeSliderDoc) {
-                    const settingsData = homeSliderDoc.data();
-                    setSettings(settingsData);
+                    setSettings(homeSliderDoc.data());
                 }
 
                 const aboutSliderDoc = settingsSnap.docs.find(doc => doc.id === "about_college_slider");
                 if (aboutSliderDoc) {
-                    const aboutSettingsData = aboutSliderDoc.data();
-                    setAboutSliderSettings(aboutSettingsData);
+                    setAboutSliderSettings(aboutSliderDoc.data());
                 }
             }
         } catch (error) {
@@ -546,70 +496,21 @@ const DynamicContentManager = () => {
         }
     };
 
-    // Add sample data for testing
-    const handleAddSampleData = async () => {
-        console.log('🧪 Adding sample data to Firebase...');
-        
-        const sampleNonTeachingStaff = {
-            name: 'Ahmed Ali',
-            designation: 'Administrative Officer',
-            department: 'Administration',
-            qualification: 'MBA',
-            experience: '5 years',
-            email: 'ahmed@gece.com',
-            phone: '0123-456789',
-            image: ''
-        };
-
-        const sampleFaculty = {
-            name: 'Dr. Sarah Khan',
-            designation: 'Professor',
-            department: 'Computer Science',
-            qualification: 'PhD in Computer Science',
-            experience: '10 years',
-            email: 'sarah@gece.com',
-            phone: '0123-456789',
-            image: ''
-        };
-
-        try {
-            // Add sample non-teaching staff
-            const nonTeachingRef = await addDoc(collection(db, "non_teaching_staff"), sampleNonTeachingStaff);
-            console.log('✅ Sample non-teaching staff added with ID:', nonTeachingRef.id);
-
-            // Add sample faculty
-            const facultyRef = await addDoc(collection(db, "faculty"), sampleFaculty);
-            console.log('✅ Sample faculty added with ID:', facultyRef.id);
-
-            // Refresh data
-            await fetchAllData();
-            
-            alert('Sample data added successfully! Check the Non-Teaching Staff and Faculty tabs.');
-        } catch (error) {
-            console.error('❌ Error adding sample data:', error);
-            alert('Failed to add sample data: ' + error.message);
-        }
-    };
-
-    React.useEffect(() => {
+    useEffect(() => {
         fetchAllData();
     }, []);
 
-    // Pre-fill caption when slide number changes
-    React.useEffect(() => {
+    useEffect(() => {
         const captions = Array.isArray(aboutSliderSettings.captions) ? aboutSliderSettings.captions : [];
         setAboutSlideCaption(captions[aboutSlideNumber - 1] || "");
     }, [aboutSlideNumber, aboutSliderSettings]);
 
-    // Upload slider/media images to Cloudinary
     const uploadSliderImage = async (file) => {
         try {
             if (!file.type.startsWith('image/')) {
                 throw new Error('Only image files are allowed for slider uploads');
             }
-            const result = await cloudinaryService.uploadFile(file, 'sliders', (p) => {
-                // optional progress hook
-            });
+            const result = await cloudinaryService.uploadFile(file, 'sliders');
             return result?.url || null;
         } catch (error) {
             console.error("Slider upload failed:", error);
@@ -617,21 +518,14 @@ const DynamicContentManager = () => {
         }
     };
 
-    // Function to handle slider image update
     const handleUpdateSlider = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        console.log("[DynamicContentManager] handleUpdateSlider - selected file:", file);
         setLoadingHomeSlider(true);
-
         try {
-            // 1. Upload to Cloudinary for slider images
             const imageUrl = await uploadSliderImage(file);
-            console.log("[DynamicContentManager] Uploaded slider image URL:", imageUrl);
-
             if (imageUrl) {
-                // 2. Save Cloudinary URL in Firestore settings for Home page to fetch
                 const currentImageUrls = Array.isArray(settings.imageUrls)
                     ? [...settings.imageUrls]
                     : settings.imageUrl
@@ -647,7 +541,7 @@ const DynamicContentManager = () => {
                 setSettings({ ...settings, imageUrls: currentImageUrls });
                 alert("Slider image updated successfully!");
             } else {
-                alert("Failed to upload image to Cloudinary. Check console for details.");
+                alert("Failed to upload image to Cloudinary.");
             }
         } catch (error) {
             console.error("Error updating slider:", error);
@@ -665,11 +559,9 @@ const DynamicContentManager = () => {
     const handleUploadAboutSlide = async () => {
         if (!selectedAboutFile) return alert("Please select an image first.");
 
-        console.log("[DynamicContentManager] handleUploadAboutSlide - selected file:", selectedAboutFile);
         setLoadingAboutSlide(true);
         try {
             const imageUrl = await uploadSliderImage(selectedAboutFile);
-            console.log("[DynamicContentManager] Uploaded about slide URL:", imageUrl);
             if (!imageUrl) throw new Error("Image upload failed");
 
             const currentImageUrls = Array.isArray(aboutSliderSettings.imageUrls)
@@ -707,33 +599,26 @@ const DynamicContentManager = () => {
         setDeleteConfirm({ action: 'deleteAboutSlide', index, label: `Slide ${index + 1}` });
     };
 
-    // Function to delete home slide image
     const deleteHomeSlideImage = (imageUrl) => {
         setDeleteConfirm({ action: 'deleteHomeSlide', imageUrl, label: 'home slide image' });
     };
 
-    // Generic add function
-    // Generic add function with validation and backup
     const addDocument = async (collectionName, data) => {
         setLoading(true);
         try {
-            // Validate data before saving
             const validation = validationService.validateData(collectionName, data);
             if (!validation.isValid) {
                 alert(`Validation Error: ${validation.errors.join(", ")}`);
                 return;
             }
 
-            // Sanitize data to prevent XSS
             const sanitizedData = validationService.sanitizeData(data);
 
-            // Check document size
             if (!validationService.validateDocumentSize(sanitizedData)) {
                 alert("Document is too large to save");
                 return;
             }
 
-            // Check collection size limits
             const collectionMap = {
                 faculty: faculty,
                 visiting_faculty: visitingFaculty,
@@ -741,8 +626,6 @@ const DynamicContentManager = () => {
                 volunteer_teachers: volunteerTeachers,
                 outlines: outlines,
                 notes: notes,
-                past_papers: pastPapers,
-                tools: tools,
                 inservice_trainings: inserviceTrainings,
             };
 
@@ -758,7 +641,6 @@ const DynamicContentManager = () => {
                 return;
             }
 
-            // Add document to Firebase
             await addDoc(collection(db, collectionName), {
                 ...sanitizedData,
                 createdAt: new Date().toISOString(),
@@ -767,7 +649,6 @@ const DynamicContentManager = () => {
 
             fetchAllData();
 
-            // Trigger backup after important data changes
             if (
                 ["faculty", "visiting_faculty", "non_teaching_staff"].includes(
                     collectionName,
@@ -776,7 +657,6 @@ const DynamicContentManager = () => {
                 setTimeout(() => backupService.performBackup(), 1000);
             }
 
-            // Reset form
             if (collectionName === "faculty")
                 setFacultyForm({
                     name: "",
@@ -806,10 +686,6 @@ const DynamicContentManager = () => {
                 setOutlineForm({ title: "", description: "", fileUrl: "" });
             else if (collectionName === "notes")
                 setNotesForm({ title: "", description: "", fileUrl: "" });
-            else if (collectionName === "past_papers")
-                setPastPaperForm({ title: "", year: "", subject: "", fileUrl: "" });
-            else if (collectionName === "tools")
-                setToolsForm({ name: "", description: "", url: "", category: "" });
             else if (collectionName === "inservice_trainings")
                 setTrainingForm({ prefix: "Mr.", name: "", profession: "", title: "", date: "", organizer: "", venue: "", description: "", image: "" });
 
@@ -817,11 +693,11 @@ const DynamicContentManager = () => {
         } catch (error) {
             console.error("Error adding document:", error);
             alert("Failed to add!");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
-    // Generic delete function
     const requestDelete = (collectionName, id, label) => {
         setDeleteConfirm({ collectionName, id, label: label || 'this item' });
     };
@@ -862,30 +738,16 @@ const DynamicContentManager = () => {
         } catch (error) {
             console.error("Error deleting:", error);
             alert("Failed to delete!");
+        } finally {
+            setLoading(false);
+            setDeleteConfirm(null);
         }
-        setLoading(false);
-        setDeleteConfirm(null);
     };
 
     const cancelDelete = () => {
         setDeleteConfirm(null);
     };
 
-    // Generic update function
-    const updateDocument = async (collectionName, id, data) => {
-        setLoading(true);
-        try {
-            await updateDoc(doc(db, collectionName, id), data);
-            fetchAllData();
-            alert("Updated successfully!");
-        } catch (error) {
-            console.error("Error updating document:", error);
-            alert("Failed to update!");
-        }
-        setLoading(false);
-    };
-
-    // Render different forms based on active tab
     const renderForm = () => {
         switch (activeTab) {
             case "faculty":
@@ -984,11 +846,9 @@ const DynamicContentManager = () => {
                 return (
                     <div className="bg-white p-6 rounded-lg border border-[#ffd200]">
                         <h3 className="text-xl font-extrabold mb-4">Add Student</h3>
-
                         <div className="space-y-4">
                             <div className="border-t pt-4">
                                 <h4 className="font-bold text-lg mb-2">Batches</h4>
-
                                 <div className="grid grid-cols-1 gap-2 mb-2">
                                     <input
                                         type="number"
@@ -1042,7 +902,6 @@ const DynamicContentManager = () => {
                                         className="w-full p-3 border rounded"
                                     />
                                 </div>
-
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                                     <select
                                         value={batchStudentForm.rel}
@@ -1057,7 +916,6 @@ const DynamicContentManager = () => {
                                         <option value="S/o">S/o</option>
                                         <option value="D/o">D/o</option>
                                     </select>
-
                                     <input
                                         type="text"
                                         placeholder="Father Name"
@@ -1071,7 +929,6 @@ const DynamicContentManager = () => {
                                         className="w-full p-3 border rounded text-base font-semibold"
                                     />
                                 </div>
-
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                                     <input
                                         type="text"
@@ -1105,62 +962,30 @@ const DynamicContentManager = () => {
                                         <option value="EST (TL)">EST (TL)</option>
                                         <option value="Private Teacher">Private Teacher</option>
                                         <option value="Private Job">Private Job</option>
-                                        <option value="Govt: Job in Health">
-                                            Govt: Job in Health
-                                        </option>
-                                         <option value="Web Developer/Web Designer">
-                                            Web Developer/Web Designer
-                                        </option>
-                                        <option value="Govt: Job in NADRA">
-                                            Govt: Job in NADRA
-                                        </option>
+                                        <option value="Govt: Job in Health">Govt: Job in Health</option>
+                                        <option value="Web Developer/Web Designer">Web Developer/Web Designer</option>
+                                        <option value="Govt: Job in NADRA">Govt: Job in NADRA</option>
                                         <option value="Job in Police">Job in Police</option>
                                         <option value="Job in Revenue">Job in Revenue</option>
                                         <option value="Auditor">Auditor</option>
                                         <option value="Business man">Business man</option>
                                         <option value="Private Bank Job">Private Bank Job</option>
                                         <option value="Visiting Teacher">Visiting Teacher</option>
-                                        <option value="Visiting Teacher in GECE Mithi">
-                                            Visiting Teacher in GECE Mithi
-                                        </option>
-                                        <option value="Studies in KU (Karachi University)">
-                                            Studies in KU (Karachi University)
-                                        </option>
-                                        <option value="For Further Studies in Foreign Country">
-                                            For Further Studies in Foreign Country
-                                        </option>
-                                          <option value="Waiting">
-                                            Waiting
-                                        </option>
-                                        <option value="Waiting for Examination">
-                                            Waiting for Examination
-                                        </option>
-                                        <option value="Studying in 3rd Semester">
-                                            Studying in 3rd Semester
-                                        </option>
-                                        <option value="Studying in 4th Semester">
-                                            Studying in 4th Semester
-                                        </option>
-                                        <option value="Studying in 5th Semester">
-                                            Studying in 5th Semester
-                                        </option>
-                                        <option value="Studying in 6th Semester">
-                                            Studying in 6th Semester
-                                        </option>
-                                        <option value="Studying in 7th Semester">
-                                            Studying in 7th Semester
-                                        </option>
-                                        <option value="Studying in 8th Semester">
-                                            Studying in 8th Semester
-                                        </option>
-                                        <option value="ADE Complete">
-                                            ADE Complete
-                                        </option>
+                                        <option value="Visiting Teacher in GECE Mithi">Visiting Teacher in GECE Mithi</option>
+                                        <option value="Studies in KU (Karachi University)">Studies in KU (Karachi University)</option>
+                                        <option value="For Further Studies in Foreign Country">For Further Studies in Foreign Country</option>
+                                        <option value="Waiting">Waiting</option>
+                                        <option value="Waiting for Examination">Waiting for Examination</option>
+                                        <option value="Studying in 3rd Semester">Studying in 3rd Semester</option>
+                                        <option value="Studying in 4th Semester">Studying in 4th Semester</option>
+                                        <option value="Studying in 5th Semester">Studying in 5th Semester</option>
+                                        <option value="Studying in 6th Semester">Studying in 6th Semester</option>
+                                        <option value="Studying in 7th Semester">Studying in 7th Semester</option>
+                                        <option value="Studying in 8th Semester">Studying in 8th Semester</option>
+                                        <option value="ADE Complete">ADE Complete</option>
                                         <option value="ADE ongoing">ADE ongoing</option>
                                     </select>
                                 </div>
-                                
-
                                 <button
                                     onClick={addStudentToBatch}
                                     disabled={loading}
@@ -1168,7 +993,6 @@ const DynamicContentManager = () => {
                                 >
                                     {loading ? "Adding..." : "Add Student"}
                                 </button>
-
                                 <div className="mt-4 pt-4 border-t border-gray-200">
                                     <button
                                         onClick={() => setActiveTab("manageStudents")}
@@ -1564,107 +1388,6 @@ const DynamicContentManager = () => {
                     </div>
                 );
 
-            case "pastPapers":
-                return (
-                    <div className="bg-white p-6 rounded-lg border border-[#ffd200]">
-                        <h3 className="text-xl font-extrabold mb-4">Add Past Paper</h3>
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Title"
-                                value={pastPaperForm.title}
-                                onChange={(e) =>
-                                    setPastPaperForm({ ...pastPaperForm, title: e.target.value })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Year"
-                                value={pastPaperForm.year}
-                                onChange={(e) =>
-                                    setPastPaperForm({ ...pastPaperForm, year: e.target.value })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Subject"
-                                value={pastPaperForm.subject}
-                                onChange={(e) =>
-                                    setPastPaperForm({
-                                        ...pastPaperForm,
-                                        subject: e.target.value,
-                                    })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <input
-                                type="url"
-                                placeholder="File URL"
-                                value={pastPaperForm.fileUrl}
-                                onChange={(e) =>
-                                    setPastPaperForm({
-                                        ...pastPaperForm,
-                                        fileUrl: e.target.value,
-                                    })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <button
-                                onClick={() => addDocument("past_papers", pastPaperForm)}
-                                disabled={loading}
-                                className="bg-[#004d00] text-white px-5 py-3 rounded-lg border border-[#ffd200] hover:bg-green-800 font-bold text-base"
-                            >
-                                {loading ? "Adding..." : "Add Past Paper"}
-                            </button>
-                        </div>
-                    </div>
-                );
-
-            case "tools":
-                return (
-                    <div className="bg-white p-6 rounded-lg border border-[#ffd200]">
-                        <h3 className="text-xl font-extrabold mb-4">Add Tool</h3>
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                value={toolsForm.name}
-                                onChange={(e) =>
-                                    setToolsForm({ ...toolsForm, name: e.target.value })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <input
-                                type="url"
-                                placeholder="URL"
-                                value={toolsForm.url}
-                                onChange={(e) =>
-                                    setToolsForm({ ...toolsForm, url: e.target.value })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Category"
-                                value={toolsForm.category}
-                                onChange={(e) =>
-                                    setToolsForm({ ...toolsForm, category: e.target.value })
-                                }
-                                className="w-full p-3 border rounded text-base font-semibold"
-                            />
-                            <button
-                                onClick={() => addDocument("tools", toolsForm)}
-                                disabled={loading}
-                                className="bg-[#004d00] text-white px-5 py-3 rounded-lg border border-[#ffd200] hover:bg-green-800 font-bold text-base"
-                            >
-                                {loading ? "Adding..." : "Add Tool"}
-                            </button>
-                        </div>
-                    </div>
-                );
-
             case "homeSlides":
                 return null;
 
@@ -1708,37 +1431,36 @@ const DynamicContentManager = () => {
                         <p className="text-sm text-green-700 mt-2">Images upload directly to Cloudinary; only the resulting URL is saved in Firestore.</p>
                     </div>
 
-                        {/* Current slider preview and remove button */}
-                        <div className="mb-6">
-                            <h4 className="text-lg font-bold mb-3">Current Slider Image</h4>
-                            {(() => {
-                                const current = Array.isArray(settings.imageUrls)
-                                    ? settings.imageUrls.filter(Boolean)
-                                    : settings.imageUrl
-                                        ? [settings.imageUrl]
-                                        : [];
+                    <div className="mb-6">
+                        <h4 className="text-lg font-bold mb-3">Current Slider Image</h4>
+                        {(() => {
+                            const current = Array.isArray(settings.imageUrls)
+                                ? settings.imageUrls.filter(Boolean)
+                                : settings.imageUrl
+                                    ? [settings.imageUrl]
+                                    : [];
 
-                                if (current.length === 0) {
-                                    return <p className="text-sm text-gray-500">No slider image configured.</p>;
-                                }
+                            if (current.length === 0) {
+                                return <p className="text-sm text-gray-500">No slider image configured.</p>;
+                            }
 
-                                return (
-                                    <div className="flex items-center justify-center gap-4 flex-wrap">
-                                        {current.map((url) => (
-                                            <div key={url} className="relative">
-                                                <img src={url} alt="Current slider" className="w-64 h-40 object-cover rounded-lg border" />
-                                                <button
-                                                    onClick={() => deleteHomeSlideImage(url)}
-                                                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-lg text-xs"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                );
-                            })()}
-                        </div>
+                            return (
+                                <div className="flex items-center justify-center gap-4 flex-wrap">
+                                    {current.map((url) => (
+                                        <div key={url} className="relative">
+                                            <img src={url} alt="Current slider" className="w-64 h-40 object-cover rounded-lg border" />
+                                            <button
+                                                onClick={() => deleteHomeSlideImage(url)}
+                                                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-lg text-xs"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })()}
+                    </div>
 
                     <div className="flex justify-center">
                         <div className="flex items-center">
@@ -1772,7 +1494,6 @@ const DynamicContentManager = () => {
 
             return (
                 <div className="grid grid-cols-1 gap-4 -mx-6 w-full">
-                    {/* Card 1: Upload Controls */}
                     <div className="bg-white p-6 rounded-lg border border-[#ffd200] w-full">
                         <div className="mb-4">
                             <h3 className="text-xl font-extrabold">Upload Slide</h3>
@@ -1783,7 +1504,7 @@ const DynamicContentManager = () => {
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Slide Number</label>
-                                    <select
+                                <select
                                     value={aboutSlideNumber}
                                     onChange={(e) => setAboutSlideNumber(Number(e.target.value))}
                                     className="border rounded px-4 py-3 w-full max-w-xs text-base font-semibold"
@@ -1834,7 +1555,6 @@ const DynamicContentManager = () => {
                         </div>
                     </div>
 
-                    {/* Card 2: Current Slides - Separate Box */}
                     <div className="bg-white p-6 rounded-lg border border-[#ffd200] w-full">
                         <div className="mb-4">
                             <h3 className="text-xl font-extrabold">Current Slides</h3>
@@ -1870,7 +1590,6 @@ const DynamicContentManager = () => {
             );
         }
 
-        // Generic data list for other tabs
         const tabTitles = {
             faculty: "Faculty Members",
             visitingFaculty: "Visiting Faculty",
@@ -1879,8 +1598,6 @@ const DynamicContentManager = () => {
             inserviceTrainings: "In-Service Trainings",
             outlines: "Outlines",
             notes: "Notes",
-            pastPapers: "Past Papers",
-            tools: "Tools"
         };
 
         const collectionMap = {
@@ -1890,15 +1607,12 @@ const DynamicContentManager = () => {
             volunteerTeachers: volunteerTeachers,
             outlines: outlines,
             notes: notes,
-            past_papers: pastPapers,
-            tools: tools,
             inserviceTrainings: inserviceTrainings,
         };
 
         const data = collectionMap[activeTab] || [];
         const collectionName = activeTab.replace(/([A-Z])/g, '_$1').toLowerCase();
 
-        // Special handling for volunteerTeachers - group by batch
         if (activeTab === "volunteerTeachers") {
             const groupedByBatch = data.reduce((acc, teacher) => {
                 const batch = teacher.batch || 'No Batch';
@@ -2041,7 +1755,7 @@ const DynamicContentManager = () => {
             {/* Form and Data List */}
             <div className={`grid grid-cols-1 ${activeTab === "manageStudents" || activeTab === "addStudent" || activeTab === "homeSlides" || activeTab === "aboutCollegeSlides" ? "" : "lg:grid-cols-2"} ${activeTab === "aboutCollegeSlides" ? "gap-0" : "gap-6"}`}>
                 {renderForm()}
-                {activeTab !== "addStudent" && renderDataList()}
+                {activeTab !== "addStudent" && activeTab !== "aboutCollegeSlides" && renderDataList()}
             </div>
 
             {/* Delete Confirmation Dialog */}
