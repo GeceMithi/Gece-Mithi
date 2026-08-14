@@ -393,6 +393,52 @@ const useResourceData = () => {
         }
     };
 
+    // Get resources by selected section while keeping app data consistent.
+    const getSectionData = async (section = 'all') => {
+        try {
+            setError(null);
+
+            const normalizedSection = String(section || 'all').toLowerCase();
+            const sectionAliases = {
+                all: ['all'],
+                outlines: ['study-materials', 'outline'],
+                'study-materials': ['study-materials', 'outline'],
+                notes: ['notes'],
+                pastpapers: ['past-papers', 'past_paper'],
+                'past-papers': ['past-papers', 'past_paper'],
+                portfolio: ['portfolio'],
+                tools: ['tools']
+            };
+
+            if (normalizedSection === 'all') {
+                if (resources.length === 0) {
+                    await fetchResources();
+                }
+                return resources;
+            }
+
+            const allowedValues = sectionAliases[normalizedSection] || [normalizedSection];
+            const filteredResources = resources.filter((resource) => {
+                const category = String(resource.category || resource.type || '').toLowerCase();
+                return allowedValues.some(value => category === value || category.includes(value));
+            });
+
+            if (filteredResources.length === 0 && resources.length === 0) {
+                await fetchResources();
+                return resources.filter((resource) => {
+                    const category = String(resource.category || resource.type || '').toLowerCase();
+                    return allowedValues.some(value => category === value || category.includes(value));
+                });
+            }
+
+            return filteredResources;
+        } catch (err) {
+            console.error('❌ Error getting section data:', err);
+            setError('Failed to get section data');
+            return [];
+        }
+    };
+
     // Get resources by category
     const getResourcesByCategory = async (category) => {
         try {

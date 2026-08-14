@@ -18,10 +18,10 @@ const Home = ({ setContentType }) => {
         // Editable slider heights (px)
         // Change these values to update slider height for each breakpoint
         const sliderHeights = {
-            base: 250, // mobile
-            md: 360,   // tablet/laptop
-            lg: 370,   // desktop
-            xl: 380    // large desktop
+            base: 290, // mobile
+            md: 410,   // tablet/laptop
+            lg: 450,   // desktop
+            xl: 500    // large desktop
         };
     
     // --- HOOKS ---
