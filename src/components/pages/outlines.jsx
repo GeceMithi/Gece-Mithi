@@ -27,14 +27,27 @@ const buildUpdatedOutlineData = (items) => {
         });
     });
 
-    return Array.from(grouped.values())
-        .sort((a, b) => a.year - b.year || a.semester - b.semester)
-        .map((semesterBlock) => ({
-            year: semesterBlock.year,
-            semesters: [{
-                semester: semesterBlock.semester,
-                courses: semesterBlock.courses
-            }]
+    // Group semesters by part/year
+    const partGrouped = new Map();
+    Array.from(grouped.values()).forEach((semesterBlock) => {
+        const partKey = semesterBlock.year;
+        if (!partGrouped.has(partKey)) {
+            partGrouped.set(partKey, {
+                year: semesterBlock.year,
+                semesters: []
+            });
+        }
+        partGrouped.get(partKey).semesters.push({
+            semester: semesterBlock.semester,
+            courses: semesterBlock.courses
+        });
+    });
+
+    return Array.from(partGrouped.values())
+        .sort((a, b) => a.year - b.year)
+        .map((partBlock) => ({
+            year: partBlock.year,
+            semesters: partBlock.semesters.sort((a, b) => a.semester - b.semester)
         }));
 };
 
