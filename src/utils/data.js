@@ -227,7 +227,7 @@ export const academicDataDownload = [
     semester: 1,
     courses: [
       {
-        name: "EED-300 Functional English Outline",
+        name: "EED-300 Functional English",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1FbBaKZxw0ARBgc-oU5R31GvPNscQrn3w&export=download&authuser=0&confirm=t&uuid=b7925b60-f2fc-4757-ac20-d2bdbbf89aec&at=APcXIO38l9q2pEPCtOSvr4n8nbmD:1770048241039",
         notesLink: "https://drive.usercontent.google.com/download?id=1Vs36uJ_aYPQn2lvAz1ng-cl7asm9vPiz&export=download&authuser=2&confirm=t&uuid=796d134a-cc5c-41ea-8c13-960d85da8498&at=ANTm3cxh3Trqo5ZtMo0eBbvNqHyx:1768477158836",
