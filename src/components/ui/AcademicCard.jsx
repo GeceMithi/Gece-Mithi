@@ -2,6 +2,30 @@ import React, { useState } from 'react';
 import { Icon } from '../services/uicomponents';
 import dynamicDataService from '../../services/dynamicDataService';
 
+const normalizeGoogleDriveDownloadUrl = (rawUrl) => {
+    if (!rawUrl || typeof rawUrl !== 'string') return '';
+
+    const trimmedUrl = rawUrl.trim();
+    if (!trimmedUrl) return '';
+
+    try {
+        const url = new URL(trimmedUrl);
+        const driveId = url.searchParams.get('id');
+        if (driveId) {
+            return `https://drive.google.com/uc?export=download&id=${driveId}`;
+        }
+    } catch (error) {
+        // Ignore invalid URL parsing; fallback to regex.
+    }
+
+    const match = trimmedUrl.match(/(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/d\/|drive\.google\.com\/open\?id=)([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+        return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+
+    return trimmedUrl;
+};
+
 const AcademicCard = ({ 
     type, // 'outline', 'notes', 'past_paper'
     year, 
@@ -52,6 +76,8 @@ const AcademicCard = ({
 
     const handleDownload = async (e) => {
         e.preventDefault();
+
+        const directDownloadUrl = normalizeGoogleDriveDownloadUrl(link);
         
         try {
             // Track the download in Firebase
@@ -61,7 +87,7 @@ const AcademicCard = ({
                 semester,
                 subject,
                 courseCode,
-                link
+                directDownloadUrl || link
             );
             
             if (tracked) {
@@ -69,16 +95,17 @@ const AcademicCard = ({
             }
             
             // Open the download link in a new tab
-            window.open(link, '_blank', 'noopener,noreferrer');
+            window.open(directDownloadUrl || link, '_blank', 'noopener,noreferrer');
             
         } catch (error) {
             console.error("❌ Error during download:", error);
             // Still try to open the link even if tracking fails
-            window.open(link, '_blank', 'noopener,noreferrer');
+            window.open(directDownloadUrl || link, '_blank', 'noopener,noreferrer');
         }
     };
 
     const isPlaceholder = link && link.includes("Placeholder");
+    const directDownloadLink = normalizeGoogleDriveDownloadUrl(link);
     
     // Debug logging
     console.log("AcademicCard - Type:", type);
@@ -162,12 +189,12 @@ const AcademicCard = ({
                                     </span>
                                 ) : (
                                     <a 
-                                        href={link} 
+                                        href={directDownloadLink || link} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         className="text-blue-600 hover:underline text-sm break-all"
                                     >
-                                        {link.length > 50 ? `${link.substring(0, 50)}...` : link}
+                                        {(directDownloadLink || link).length > 50 ? `${(directDownloadLink || link).substring(0, 50)}...` : (directDownloadLink || link)}
                                     </a>
                                 )}
                             </div>

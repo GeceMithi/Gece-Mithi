@@ -227,42 +227,42 @@ export const academicDataDownload = [
     semester: 1,
     courses: [
       {
-        name: "GENG-300 Functional English Outline",
+        name: "EED-300 Functional English Outline",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1FbBaKZxw0ARBgc-oU5R31GvPNscQrn3w&export=download&authuser=0&confirm=t&uuid=b7925b60-f2fc-4757-ac20-d2bdbbf89aec&at=APcXIO38l9q2pEPCtOSvr4n8nbmD:1770048241039",
         notesLink: "https://drive.usercontent.google.com/download?id=1Vs36uJ_aYPQn2lvAz1ng-cl7asm9vPiz&export=download&authuser=2&confirm=t&uuid=796d134a-cc5c-41ea-8c13-960d85da8498&at=ANTm3cxh3Trqo5ZtMo0eBbvNqHyx:1768477158836",
         pastPaperLink: "https://drive.google.com/d/Y1S1C1_PP",
       },
       {
-        name: "GICT-300 Applications of Information and Communication Technology (ICT)",
+        name: " EED-302 Islamic Studies",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1qxADmfq-yeMID34WTzkGbN-pAnXPUVcw&export=download&authuser=0&confirm=t&uuid=12e82ada-83f8-46a8-8bae-b68658984ff4&at=APcXIO0slYRjnoDXaLrQkUdvDD4G:1770048327642",
         notesLink: "https://drive.usercontent.google.com/download?id=1yOfpMyysqfr7V6PrhFvb8dWML94gA0qZ&export=download&authuser=2&confirm=t&uuid=d4576329-2190-4cca-9c0a-b48a2129adfa&at=ANTm3cwpUO3zBe6UqtarcimVHJQi:1768477529625",
         pastPaperLink: "https://drive.google.com/d/Y1S1C6_PP",
       },
       {
-        name: "GQUR-300 Quantitative_Reasoning_I (Math)",
+        name: "EED-311 Child Development",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1U0GoKAzqN6dMNs4EKbd_bmWHeltx6vjE&export=download&authuser=0&confirm=t&uuid=b9fe6079-b681-4d27-8fbd-71a795a7b364&at=APcXIO2ykbAdJm4LHnxAYMtfZB3b:1770048372264",
         notesLink: "https://drive.usercontent.google.com/download?id=1Vd3zpGT_85l043LihdgbyHSNuPTQ9C5A&export=download&authuser=2&confirm=t&uuid=4415e237-3b0f-43aa-a897-8feb627fe3dc&at=ANTm3cwrOoXdgBnqbDDfNfEJgOHT:1768476970499",
         pastPaperLink: "https://drive.google.com/d/Y1S1C4_PP",
       },
       {
-        name: "EFMP-301 Education Psychology",
+        name: "EED-312 General Methods of Teaching",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1gB4QiouWLy1RIWDyd-wSwvZ6ye7g393W&export=download&authuser=0&confirm=t&uuid=c069e706-64a2-4540-9bfa-09706dec015e&at=APcXIO36GTI2LjQ-Us53TA0B_S_b:1770048427075",
         notesLink: "https://drive.usercontent.google.com/download?id=1HWdP2wYHc5TLqPtaQbd_0dgV6g8ZHNLH&export=download&authuser=2&confirm=t&uuid=71db88eb-5f59-46cd-88ee-fc3b1915cbbc&at=ANTm3czLOlLcQQoP7EpJ9UuTZKJ6:1768479737939",
         pastPaperLink: "https://drive.google.com/d/Y1S1C3_PP",
       },
       {
-        name: "EFMP-302 Teaching Profession",
+        name: "EED-351 Sindhi Boli jo Nisab",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=10IBYg0VR7LoThj4tkmeZjlBLlkVQYwaa&export=download&authuser=0&confirm=t&uuid=97117648-5a0b-4d14-84f6-9ab8bbde40a3&at=APcXIO2zSxuHxhQd-z7_XYf9oVSx:1770048614755",
         notesLink: "https://drive.usercontent.google.com/download?id=1EYj6D0DVbDFSJ7mnyPsKWVwSw8dQWoqk&export=download&authuser=0&confirm=t&uuid=d4fc6b22-8aca-4056-9732-7680db1bc26a&at=ANTm3cx46cwrQAVvCMEQCFA__HAV:1768578198821",
         pastPaperLink: "https://drive.google.com/d/Y1S1C2_PP",
       },
       {
-        name: "GNAS-401 Natural Science (Environmental Science)",
+        name: "EED-352 General Science",
         outlineLink:
           "https://drive.usercontent.google.com/download?id=1U5prb_uq3eR1U_pEuEGPUBCcDB4aSWBl&export=download&authuser=0&confirm=t&uuid=81582655-0c1a-4eba-aa75-5d55087029ff&at=APcXIO1h6pBxWfZILBCerLSBT1rc:1770048656564",
         notesLink: "https://drive.usercontent.google.com/download?id=1LIb2TC3pS5nWNKg93SwW-mvjY76qlB2Q&export=download&authuser=2&confirm=t&uuid=e5b4220f-3b94-4be3-8ccb-245fa8355343&at=ANTm3cyGB5GpGBgPEcZIJXbw8q5D:1768477188441",

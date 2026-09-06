@@ -37,6 +37,7 @@ import DynamicContentManager from '../features/DynamicContentManager';
 import CloudinaryMediaManager from '../features/CloudinaryMediaManager';
 import SuccessStoriesManagement from '../admin/successstoriesmanagement';
 import ResourceManagement from '../admin/resourcemanagement';
+import AdmissionManagement from '../admin/admissionmanagement';
 
 // NOTE: PDF notices are converted to high-quality images and uploaded to Cloudinary
 
@@ -125,6 +126,16 @@ const App = () => {
     const [editForm, setEditForm] = useState({ id: '', studentCnic: '', part: '', batch: '', amount: '', status: '' });
 
     const isGlobalLoading = loading || isAuthLoading || uploading;
+
+    const adminTabTitles = {
+        dashboard: 'All Students',
+        verifiedList: 'Verified List',
+        noticeBoard: 'Notice Board',
+        successStories: 'Success Stories',
+        contentManager: 'Content Manager',
+        resourceManagement: 'Resource Management',
+        admissionManagement: 'Admission Applications'
+    };
 
     useEffect(() => {
         if (isGlobalLoading) { document.title = "Processing... | GECE Mithi"; } else { document.title = user ? (isAdmin === true ? "Admin Panel | GECE Mithi" : "Student Portal | GECE Mithi") : "Login | GECE Mithi"; }
@@ -717,12 +728,12 @@ const App = () => {
                             <div className="bg-white p-1 rounded-full mb-3 shadow-md w-20 h-20 flex items-center justify-center border-[3px] border-[#ffd200]">
                                 <img src="/logo1.png" alt="Logo" className="h-[90%] w-[90%] object-contain" />
                             </div>
-                            {activeTab !== 'contentManager' && (
-                                <>
-                                    <h2 className="text-white font-extrabold tracking-wider text-lg mt-1">ADMIN PANEL</h2>
-                                    <p className="text-[#00ff80] text-xs font-bold tracking-widest mt-1">GECE MITHI</p>
-                                </>
-                            )}
+                            <>
+                                <h2 className="text-white font-extrabold tracking-wider text-lg mt-1 text-center">
+                                    {adminTabTitles[activeTab] || 'Admin Panel'}
+                                </h2>
+                                <p className="text-[#00ff80] text-xs font-bold tracking-widest mt-1">GECE MITHI</p>
+                            </>
                         </div>
 
                         {/* Buttons Section */}
@@ -737,6 +748,7 @@ const App = () => {
                                     { id: 'successStories', label: 'SUCCESS STORIES', icon: Icons.Trophy },
                                     { id: 'contentManager', label: 'STAFF MANAGER', icon: Icons.Users },
                                     { id: 'resourceManagement', label: 'RESOURCE MANAGEMENT', icon: Icons.Database },
+                                    { id: 'admissionManagement', label: 'ADMISSION APPLICATIONS', icon: Icons.Exam },
                                 ].map((item) => (
                                     <button
                                         key={item.id}
@@ -956,6 +968,9 @@ const App = () => {
                                 </div>
                             </div>
                         )}
+
+                        {/* 2.5 ADMISSION APPLICATIONS */}
+                        {activeTab === 'admissionManagement' && <AdmissionManagement />}
 
                         {/* 3. NOTICE BOARD */}
                         {activeTab === 'noticeBoard' && (

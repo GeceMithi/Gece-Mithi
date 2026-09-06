@@ -1722,10 +1722,20 @@ const DynamicContentManager = () => {
         );
     };
 
+    const contentTabTitles = {
+        aboutCollegeSlides: "Home Slides",
+        faculty: "Faculty",
+        visitingFaculty: "Visiting Faculty",
+        nonTeaching: "Non-Teaching Staff",
+        volunteerTeachers: "Volunteer Teachers",
+        inserviceTrainings: "In-Service Trainings",
+        addStudent: "Add Student",
+    };
+
     return (
         <div className="p-6">
             <div className="mb-6">
-                <h2 className="text-3xl font-extrabold">Content Update</h2>
+                <h2 className="text-3xl font-extrabold">{contentTabTitles[activeTab] || "Content Manager"}</h2>
             </div>
 
             {/* Tab Navigation */}
@@ -1755,7 +1765,7 @@ const DynamicContentManager = () => {
             {/* Form and Data List */}
             <div className={`grid grid-cols-1 ${activeTab === "manageStudents" || activeTab === "addStudent" || activeTab === "homeSlides" || activeTab === "aboutCollegeSlides" ? "" : "lg:grid-cols-2"} ${activeTab === "aboutCollegeSlides" ? "gap-0" : "gap-6"}`}>
                 {renderForm()}
-                {activeTab !== "addStudent" && activeTab !== "aboutCollegeSlides" && renderDataList()}
+                {activeTab !== "addStudent" && renderDataList()}
             </div>
 
             {/* Delete Confirmation Dialog */}

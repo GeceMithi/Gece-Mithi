@@ -1,54 +1,106 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebase/firebase';
 import { Icon } from '../services/uicomponents';
-import { toolsData } from '../../utils/data'; // <-- Ye import zaroori hai
 
 const Tools = () => {
-    
-    const ToolCard = ({ tool }) => (
-        <div className={`group bg-white p-6 rounded-2xl shadow-sm border ${tool.color.split(' ')[2]} cursor-pointer hover:shadow-xl hover:border-[#004d00] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full`}>
-            <div>
-                <div className={`w-14 h-14 ${tool.color.split(' ')[0]} ${tool.color.split(' ')[1]} rounded-xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon path={tool.icon} />
-                </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#004d00] transition-colors line-clamp-2">
-                    {tool.title}
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-4">
-                    {tool.desc}
-                </p>
-            </div>
-            
-            {/* Download Button (Ab ye data.js se 'tool.link' uthayega) */}
-            <a 
-                href={tool.link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mt-auto w-full flex items-center justify-center gap-2 bg-red-500  text-white hover:text-white py-2 rounded-lg text-sm font-bold transition-all border border-[#ffd200] hover:border-[#004d00]"
-            >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download
-            </a>
-        </div>
-    );
+  const [tools, setTools] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchTools = async () => {
+      try {
+        const toolsQuery = query(collection(db, 'academic_data'), where('category', '==', 'tools'));
+        const snapshot = await getDocs(toolsQuery);
+        setTools(snapshot.docs.map((toolDoc) => ({ id: toolDoc.id, ...toolDoc.data() })));
+      } catch (error) {
+        console.error('Failed to load tools:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTools();
+  }, []);
+
+  const ToolCard = ({ tool }) => {
     return (
-        <div className="content-entry-animation">
-            <div className="text-center mb-12 pt-4">
-                <h1 className="text-3xl md:text-4xl font-extrabold text-yellow-500 tracking-tight">
-                    Teaching <span className="text-[#004d00]">Tools & Forms</span>
-                </h1>
-                <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
-                    Essential observation forms, feedback tools, and lesson plan templates.
-                </p>
-            </div>
+      <div className="bg-white rounded-2xl p-6 border-2 border-amber-400 flex flex-col justify-between h-full transition-all duration-200">
+        <div>
+          {/* Small Rounded Icon Badge */}
+          <div
+            className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl mb-4 ${
+              tool.iconBg || 'bg-blue-50 text-blue-500'
+            }`}
+          >
+            <Icon path={tool.icon || 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'} />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {toolsData.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                ))}
-            </div>
+          {/* Title */}
+          <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-2">
+            {tool.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-sm text-slate-600 leading-relaxed mb-6">
+            {tool.description || 'Teaching and assessment resource.'}
+          </p>
         </div>
+
+        {/* Download Button */}
+        <a
+          href={tool.fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full inline-flex items-center justify-center gap-2 bg-[#4cae38] hover:bg-[#439c32] active:scale-[0.99] text-white py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors duration-150"
+        >
+          {/* Download Tray Arrow Icon */}
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v11m0 0l-3.5-3.5M12 15l3.5-3.5"
+            />
+          </svg>
+          <span>Download</span>
+        </a>
+      </div>
     );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+      {/* Outer Main Container */}
+      <div className="max-w-6xl mx-auto bg-white rounded-3xl border-2 border-amber-400 p-8 sm:p-12">
+        {/* Header Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+            Teaching Tools
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+            Download essential tools for classroom observation and assessment.
+          </p>
+        </div>
+
+        {/* 3-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            <p className="col-span-full text-center text-slate-500">Loading tools...</p>
+          ) : tools.length === 0 ? (
+            <p className="col-span-full text-center text-slate-500">No tools available.</p>
+          ) : tools.map((tool) => (
+            <ToolCard key={tool.id || tool.title} tool={tool} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Tools;

@@ -1,16 +1,74 @@
-import React from 'react';
-import { Icon } from '../services/uicomponents';
-// Import Data from data.js
-import { pastPapersData } from '../../utils/data';
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { db } from '../../firebase/firebase';
+import PastPaperSection from '../academic/PastPaperSection';
 
 const PastPaper = () => {
+    const [sections, setSections] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPastPapers = async () => {
+            try {
+                setLoading(true);
+                const q = query(collection(db, 'academic_data'), orderBy('createdAt', 'desc'));
+                const snapshot = await getDocs(q);
+
+                const papers = snapshot.docs
+                    .map((doc) => {
+                        const data = doc.data();
+                        const category = String(data.category || data.type || '').toLowerCase();
+                        const isPastPaper = category === 'past-papers' || category === 'past_paper';
+
+                        if (!isPastPaper) return null;
+
+                        const part = Number(data.part ?? data.year ?? 1);
+                        const semester = Number(data.semester ?? 1);
+
+                        return {
+                            id: doc.id,
+                            title: data.title || `Past Paper Part ${part} Semester ${semester}`,
+                            description: '',
+                            part,
+                            semester,
+                            fileUrl: data.fileUrl || data.url || '',
+                            link: data.fileUrl || data.url || '',
+                            createdAt: data.createdAt,
+                        };
+                    })
+                    .filter(Boolean)
+                    .sort((a, b) => a.part - b.part || a.semester - b.semester);
+
+                const grouped = papers.reduce((acc, paper) => {
+                    const partKey = `Part ${paper.part}`;
+                    if (!acc[partKey]) {
+                        acc[partKey] = {
+                            part: paper.part,
+                            partTitle: partKey,
+                            items: [],
+                        };
+                    }
+
+                    acc[partKey].items.push(paper);
+                    return acc;
+                }, {});
+
+                setSections(Object.values(grouped));
+            } catch (error) {
+                console.error('Error fetching past papers from Firebase:', error);
+                setSections([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPastPapers();
+    }, []);
 
     return (
         <div className="content-entry-animation">
-            
-            {/* --- Header Section --- */}
             <div className="text-center mb-12 pt-6">
-                 <h1 className="text-4xl font-extrabold text-yellow-500 tracking-tighter content-entry-animation sm:text-5xl">
+                <h1 className="text-4xl font-extrabold text-yellow-500 tracking-tighter content-entry-animation sm:text-5xl">
                     Welcome to <span className="text-green-700"> B.Ed. (Hons)</span>
                 </h1>
                 <br />
@@ -22,63 +80,13 @@ const PastPaper = () => {
                 </p>
             </div>
 
-            {/* --- LOOP THROUGH IMPORTED DATA --- */}
-            <div className="flex flex-col gap-10"> 
-                
-                {pastPapersData.map((part, index) => (
-                    // --- PART BOX (Container) ---
-                    <div key={index} className="bg-white rounded-3xl shadow-xl border border-[#ffd200] overflow-hidden transform transition-all hover:shadow-2xl">
-                        
-                        {/* Box Header (Gray Bar) */}
-                        <div className="bg-gray-50 p-6 border-b border-[#ffd200] flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <span className="text-[#004d00] bg-green-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                                    {part.yearLabel}
-                                </span>
-                                <h2 className="text-xl md:text-2xl font-bold text-green-800 mt-2">
-                                    {part.partTitle}
-                                </h2>
-                            </div>
-                            {/* Decorative Number */}
-                            <div className="text-4xl font-black text-gray-200">0{index + 1}</div>
-                        </div>
-
-                        {/* Box Body (Cards Grid) */}
-                        <div className="p-6 md:p-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {part.semesters.map((sem) => (
-                                    <div key={sem.id} className={`group bg-white p-5 rounded-2xl border-2 ${sem.color.split(' ')[2]} flex flex-col justify-between hover:border-[#004d00] hover:shadow-md transition-all duration-300`}>
-                                        
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className={`p-3 rounded-xl ${sem.color.split(' ')[0]} ${sem.color.split(' ')[1]}`}>
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#004d00] transition-colors">{sem.title}</h3>
-                                            <p className="text-sm text-gray-500">{sem.desc}</p>
-                                        </div>
-
-                                        {/* Download Button */}
-                                        <a 
-                                            href={sem.link}
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            className="w-full flex items-center justify-center gap-2 bg-green-600 text-white border border-[#ffd200] hover:bg-red-600 hover:border-red-400 py-2.5 rounded-lg text-sm font-bold transition-all"
-                                        >
-                                            <Icon path="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" className="w-4 h-4" />
-                                            Download
-                                        </a>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                    </div>
-                ))}
-            </div>
-
+            {loading ? (
+                <div className="text-center text-gray-600 py-10">Loading past papers...</div>
+            ) : sections.length === 0 ? (
+                <div className="text-center text-gray-600 py-10">No past papers uploaded yet.</div>
+            ) : (
+                <PastPaperSection sections={sections} />
+            )}
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
 import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
+import { convertResourceUrl } from '../utils/downloadUrl';
 
 const useResourceData = () => {
     const [resources, setResources] = useState([]);
@@ -24,14 +25,19 @@ const useResourceData = () => {
             
             const resourcesData = querySnapshot.docs.map(doc => {
                 const data = doc.data();
+                const title = data.title || data.subject || '';
+                const portfolioType = data.portfolioType || title.split(' - ')[0] || '';
+                const itemType = data.itemType || title.split(' - ')[1] || '';
                 console.log(`📄 Processing UNIFIED Firebase doc: ${doc.id}`, data);
                 
                 const mappedData = {
                     id: doc.id,
                     ...data,
                     // Map back to admin panel format
-                    title: data.title || data.subject,
-                    category: data.category, // Keep original category: 'study-materials', 'notes', 'past-papers'
+                    title,
+                    category: data.category, // Keep the original resource category, including tools.
+                    portfolioType,
+                    itemType,
                     // Ensure required fields for admin panel
                     fileUrl: data.fileUrl || '',
                     description: data.description || '',
@@ -61,13 +67,14 @@ const useResourceData = () => {
             console.log(`➕ Admin panel adding resource (UNIFIED):`, resourceData);
             
             // Parse year and semester from class field
-            let year = 1, semester = 1;
+            let part = Number(resourceData.part ?? resourceData.year ?? 1);
+            let semester = Number(resourceData.semester ?? 1);
             if (resourceData.class) {
                 const classParts = resourceData.class.split(' ');
                 console.log(`📋 Class parts:`, classParts);
                 if (classParts.length >= 4) {
-                    year = parseInt(classParts[1]) || 1;
-                    semester = parseInt(classParts[3]) || 1;
+                    part = parseInt(classParts[1]) || part;
+                    semester = parseInt(classParts[3]) || semester;
                 }
             }
             
@@ -75,22 +82,26 @@ const useResourceData = () => {
             const unifiedData = {
                 // Core identification
                 category: resourceData.category, // Keep original category: 'study-materials', 'notes', 'past-papers'
-                type: resourceData.category === 'study-materials' ? 'outline' : 
+                    type: resourceData.category === 'study-materials' ? 'outline' : 
                       resourceData.category === 'notes' ? 'notes' : 
-                      resourceData.category === 'past-papers' ? 'past_paper' : 'other',
+                        resourceData.category === 'past-papers' ? 'past_paper' : 
+                        resourceData.category === 'tools' ? 'tool' : 'other',
                 
                 // Academic information
                 title: resourceData.title,
                 subject: resourceData.title, // For consistency
-                year: year,
+                part: part,
+                year: part,
                 semester: semester,
-                class: resourceData.class,
+                class: resourceData.class || `Year ${part} Semester ${semester}`,
                 courseCode: resourceData.courseCode || '',
                 description: resourceData.description || '',
                 
                 // Media information
-                fileUrl: resourceData.fileUrl || '',
+                fileUrl: convertResourceUrl(resourceData.category, resourceData.fileUrl),
                 fileType: resourceData.fileType || 'pdf',
+                portfolioType: resourceData.portfolioType || '',
+                itemType: resourceData.itemType || '',
                 
                 // Metadata
                 createdAt: new Date(),
@@ -142,96 +153,21 @@ const useResourceData = () => {
         }
     };
 
-    // Smart update: Remove old data and add new data
+    // Update the existing unified document without changing its identity.
     const updateResource = async (resourceId, resourceData) => {
         try {
             setError(null);
-            console.log(`🔄 Smart update starting for: ${resourceData.title || resourceData.subject}`);
-            
-            // Map admin panel fields to media_files structure
-            const firebaseCategory = resourceData.category === 'study-materials' ? 'outline' : 
-                                  resourceData.category === 'notes' ? 'notes' : 
-                                  resourceData.category === 'past-papers' ? 'past_paper' : 'other';
-            
-            const year = resourceData.year || 1;
-            const semester = resourceData.semester || 1;
-            const subject = resourceData.title || resourceData.subject;
-            
-            console.log(`📋 Update details:`, {
-                category: firebaseCategory,
-                year,
-                semester,
-                subject,
-                resourceId
-            });
-            
-            // STEP 1: Remove existing data for this subject/year/semester
-            await removeExistingData(firebaseCategory, year, semester, subject, resourceId);
-            
-            // STEP 2: Add new data
-            const newResourceData = {
-                category: firebaseCategory,
-                fileUrl: resourceData.fileUrl,
-                subject: subject,
-                year: year,
-                semester: semester,
-                courseCode: resourceData.courseCode || '',
-                description: resourceData.description || '',
-                createdAt: new Date(),
+            await updateDoc(doc(db, 'academic_data', resourceId), {
+                fileUrl: convertResourceUrl(resourceData.category, resourceData.fileUrl),
                 updatedAt: new Date()
-            };
-            
-            console.log(`➕ Adding new data:`, newResourceData);
-            const docRef = await addDoc(collection(db, 'media_files'), newResourceData);
-            console.log(`✅ New data added with ID: ${docRef.id}`);
-            
-            // Refresh resources list
+            });
             await fetchResources();
-            
-            return { success: true, newId: docRef.id };
+
+            return { success: true, id: resourceId };
         } catch (err) {
             console.error('❌ Error updating resource:', err);
             setError('Failed to update resource');
             return { success: false, error: err.message };
-        }
-    };
-
-    // Remove existing data before update
-    const removeExistingData = async (category, year, semester, subject, excludeResourceId = null) => {
-        try {
-            console.log(`🗑️ Removing existing data for: ${category}, Year ${year}, Sem ${semester}, Subject: ${subject}`);
-            
-            const mediaCollection = collection(db, 'media_files');
-            const q = query(
-                mediaCollection,
-                where('category', '==', category),
-                where('year', '==', year),
-                where('semester', '==', semester),
-                where('subject', '==', subject)
-            );
-            
-            const querySnapshot = await getDocs(q);
-            console.log(`📋 Found ${querySnapshot.docs.length} existing records to remove`);
-            
-            const deletePromises = [];
-            querySnapshot.docs.forEach(doc => {
-                // Don't delete the current record if we're updating it
-                if (excludeResourceId && doc.id !== excludeResourceId) {
-                    console.log(`🗑️ Removing old record: ${doc.id}`);
-                    deletePromises.push(deleteDoc(doc(db, 'media_files', doc.id)));
-                }
-            });
-            
-            if (deletePromises.length > 0) {
-                await Promise.all(deletePromises);
-                console.log(`✅ Removed ${deletePromises.length} old records`);
-            } else {
-                console.log(`ℹ️ No old records to remove`);
-            }
-            
-        } catch (err) {
-            console.error('❌ Error removing existing data:', err);
-            throw err;
         }
     };
 
