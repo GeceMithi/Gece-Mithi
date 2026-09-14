@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 // --- LOGO IMPORT ---
 import logoImg from '../../assets/logo.png'; 
+import { db } from '../../firebase/firebase';
 
 // --- REUSABLE NAV BUTTON (For standard links) ---
 const NavButton = ({ type, currentType, label, onClick, isMobile = false }) => {
@@ -27,6 +29,7 @@ const NavButton = ({ type, currentType, label, onClick, isMobile = false }) => {
 
 const Navbar = ({ contentType, setContentType }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [admissionActive, setAdmissionActive] = useState(false);
     
     // State for Mobile Dropdown (only one open at a time)
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -34,6 +37,19 @@ const Navbar = ({ contentType, setContentType }) => {
     // State for Desktop Dropdowns with hover delays
     const [dropdownStates, setDropdownStates] = useState({});
     const [dropdownTimeouts, setDropdownTimeouts] = useState({});
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(
+            doc(db, 'settings', 'admission_form'),
+            (snapshot) => setAdmissionActive(snapshot.exists() && snapshot.data()?.isActive === true),
+            (error) => {
+                console.error('Admission navigation visibility check failed:', error);
+                setAdmissionActive(false);
+            }
+        );
+
+        return () => unsubscribe();
+    }, []);
 
     // Handle dropdown hover with delay
     const handleDropdownHover = (dropdownType, isEntering) => {
@@ -74,19 +90,11 @@ const Navbar = ({ contentType, setContentType }) => {
         { type: 'pastPaper', label: 'Past Papers' },
         { type: 'resources', label: 'Portfolios & Tools' },
 
-        // "Portal" Dropdown
-        {
-            type: 'portal-dropdown',
-            label: 'Login',
-            isDropdown: true,
-            subItems: [
-                 { type: 'studentportal', label: 'Login' },
-                { type: 'admission', label: 'Admission' }
-            ]
-        },
+        { type: 'admission', label: 'Admission' },
+        { type: 'studentportal', label: 'Portal Login' },
 
         { type: 'contact', label: 'Contact' },
-    ]), []);
+    ].filter(item => item.type !== 'admission' || admissionActive)), [admissionActive]);
 
     const handleNavClick = (type) => {
         setContentType(type);

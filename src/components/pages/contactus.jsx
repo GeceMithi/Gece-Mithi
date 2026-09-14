@@ -98,15 +98,37 @@ const ContactUs = () => {
                                 </div>
                             </div>
 
-                            {/* Phone */}
+                            {/* Principal Phone */}
                             <div className="flex items-start">
                                 <div className="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                 </div>
                                 <div className="ml-4">
-                                    <h3 className="text-lg font-bold text-gray-800">Contact Number</h3>
-                                    <p className="text-gray-600">+92-331-3708015</p>
+                                    <h3 className="text-lg font-bold text-gray-800">Principal</h3>
+                                    <a href="tel:+923313708015" className="text-gray-600 hover:text-[#004d00] hover:underline">+92-331-3708015</a>
                                     <p className="text-xs text-gray-400">(Office Hours Only)</p>
+                                </div>
+                            </div>
+
+                            {/* Web Developer Phone */}
+                            <div className="flex items-start">
+                                <div className="w-12 h-12 bg-green-100 text-[#004d00] rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"></path></svg>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-bold text-gray-800">Web Developer</h3>
+                                    <a href="tel:+923361121841" className="text-gray-600 hover:text-[#004d00] hover:underline">+92-336-1121841</a>
+                                </div>
+                            </div>
+
+                            {/* Email */}
+                            <div className="flex items-start">
+                                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l9 6 9-6M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"></path></svg>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-bold text-gray-800">Email</h3>
+                                    <a href="mailto:gecemithiedu@gmail.com" className="text-gray-600 hover:text-[#004d00] hover:underline break-all">gecemithiedu@gmail.com</a>
                                 </div>
                             </div>
                         </div>

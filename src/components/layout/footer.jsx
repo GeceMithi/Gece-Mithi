@@ -73,18 +73,22 @@ const Footer = ({ setContentType }) => {
                     {/* Column 2: Contact Info */}
                     <div>
                         <h3 className="text-[#FFD700] text-xl font-bold mb-6 uppercase tracking-wider">GECE Mithi</h3>
-                        <div className="space-y-4 text-[15px]">
+                        <div className="space-y-4 text-[15px] text-white">
                             <div className="flex items-start">
                                 <span className="text-[#FFD700] mr-3 mt-1 text-lg">📍</span>
                                 <span>Govt. Elementary College of Education (M/W), Mithi, Tharparkar.</span>
                             </div>
                             <div className="flex items-start">
                                 <span className="text-[#FFD700] mr-3 mt-1 text-lg">📞</span>
-                                <span className="hover:text-white cursor-pointer">+92-331-3708015</span>
+                                <a href="tel:+923313708015" className="!text-white hover:!text-white hover:underline">Principal: <span   className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:text-white" >+92-331-3708015</span></a>
+                            </div>
+                            <div className="flex items-start">
+                                <span className="text-[#FFD700] mr-3 mt-1 text-lg">📞</span>
+                                <a href="tel:+923361121841" className="!text-white hover:!text-white hover:underline">Web Developer: <span className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:text-white">+92-336-1121841</span></a>
                             </div>
                             <div className="flex items-start">
                                 <span className="text-[#FFD700] mr-3 mt-1 text-lg">✉️</span>
-                                <span className="hover:text-white cursor-pointer">gecemithiedu@gmail.com</span>
+                                <a href="mailto:gecemithiedu@gmail.com" className="!text-white hover:!text-white hover:underline break-all">gecemithiedu@gmail.com</a>
                             </div>
                         </div>
                     </div>

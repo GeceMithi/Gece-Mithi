@@ -53,23 +53,36 @@ const AdmissionAvailability = () => {
         return <div className="min-h-[600px] flex items-center justify-center text-gray-500">Loading admission status...</div>;
     }
 
-    if (!isActive) {
-        return (
-            <div className="min-h-[600px] flex items-center justify-center px-4">
-                <div className="w-full max-w-lg text-center rounded-2xl border-2 border-[#ffd200] bg-white p-10 shadow-xl">
-                    <h1 className="text-3xl font-extrabold text-[#004d00]">Admissions Coming Soon</h1>
-                    <p className="mt-3 text-gray-600">The admission form is currently unavailable. Please check back later.</p>
-                </div>
-            </div>
-        );
-    }
+    if (!isActive) return null;
 
     return <Admission />;
+};
+
+const pageTitles = {
+    home: 'Home',
+    outline: 'Course Outlines',
+    resources: 'Portfolios & Resources',
+    tools: 'Teaching Tools',
+    notes: 'Academic Notes',
+    pastPaper: 'Past Papers',
+    successStories: 'Success Stories',
+    about: 'About Us',
+    contact: 'Contact Us',
+    trainings: 'In-Service Trainings',
+    studentportal: 'Student Portal',
+    batches: 'All Batches',
+    mediaLibrary: 'Media Library',
+    developer: 'Web Developer',
+    admission: 'Admissions',
 };
 
 export default function App() {
     useSecurity();
     const [contentType, setContentType] = useState('home');
+
+    useEffect(() => {
+        document.title = `${pageTitles[contentType] || 'Home'} | GECE Mithi`;
+    }, [contentType]);
 
     // Handle URL parameter for developer page
     useEffect(() => {
@@ -137,15 +150,17 @@ export default function App() {
                     `}
                 </style>
 
-                <div className="flex flex-col min-h-screen w-full"> 
+                <div className={`flex flex-col min-h-screen w-full ${contentType === 'admission' ? 'print-document-shell' : ''}`}> 
                     
                     {/* 1. Navbar */}
-                    <Navbar contentType={contentType} setContentType={setContentType} />
+                    <div className="site-navbar">
+                        <Navbar contentType={contentType} setContentType={setContentType} />
+                    </div>
                     
                     {/* 2. Main Content Box */}
-                    <main className="grow w-full max-w-screen-2xl mx-auto px-4 md:px-8 mt-6 md:mt-10">
+                    <main className={`site-main grow w-full max-w-screen-2xl mx-auto ${contentType === 'admission' ? '' : 'px-4 md:px-8 mt-6 md:mt-10'}`}>
                         <div 
-                            className="bg-white rounded-2xl shadow-xl w-full overflow-hidden min-h-[600px] p-4 md:p-8 border-4 border-[#ffd200]"
+                            className={`site-main-panel bg-white rounded-2xl shadow-xl w-full overflow-hidden min-h-[600px] border-4 border-[#ffd200] ${contentType === 'admission' ? 'p-0 rounded-none border-0 shadow-none min-h-0' : 'p-4 md:p-8'}`}
                             style={{ boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)' }}
                         >
                             {renderContent()}
@@ -153,7 +168,11 @@ export default function App() {
                     </main>
 
                     {/* 3. Footer */}
-                    <Footer setContentType={setContentType} />
+                    {contentType !== 'admission' && (
+                        <div className="site-footer">
+                            <Footer setContentType={setContentType} />
+                        </div>
+                    )}
 
                 </div>
             </>
