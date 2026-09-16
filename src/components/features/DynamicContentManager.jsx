@@ -281,7 +281,6 @@ const DynamicContentManager = () => {
     });
 
     const [selectedBatchDropdown, setSelectedBatchDropdown] = useState("");
-    const [newBatchYear, setNewBatchYear] = useState("");
 
     // Data states
     const [faculty, setFaculty] = useState([]);
@@ -647,7 +646,7 @@ const DynamicContentManager = () => {
                 updatedAt: new Date().toISOString(),
             });
 
-            fetchAllData();
+            await fetchAllData();
 
             if (
                 ["faculty", "visiting_faculty", "non_teaching_staff"].includes(
@@ -692,7 +691,7 @@ const DynamicContentManager = () => {
             alert("Added successfully!");
         } catch (error) {
             console.error("Error adding document:", error);
-            alert("Failed to add!");
+            alert(`Failed to add: ${error.message || "Unknown Firebase error"}`);
         } finally {
             setLoading(false);
         }
@@ -1203,7 +1202,9 @@ const DynamicContentManager = () => {
                     <div className="bg-white p-6 rounded-lg border border-[#ffd200]">
                         <h3 className="text-xl font-extrabold mb-4">Add Volunteer Teacher</h3>
                         <div className="space-y-4">
-                            <select
+                            <input
+                                type="text"
+                                placeholder="Batch (e.g., 2k25 or Batch 2k25)"
                                 value={volunteerTeacherForm.batch}
                                 onChange={(e) =>
                                     setVolunteerTeacherForm({
@@ -1211,41 +1212,8 @@ const DynamicContentManager = () => {
                                         batch: e.target.value,
                                     })
                                 }
-                                className="w-full p-3 border border-[#ffd200] rounded text-base font-semibold"
-                            >
-                                <option value="">Select Batch</option>
-                                {batches.map((batch) => (
-                                    <option key={batch.year} value={batch.year}>
-                                        Batch {batch.year}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="flex gap-3">
-                                <input
-                                    type="number"
-                                    placeholder="Or enter new batch year (e.g., 2027)"
-                                    value={newBatchYear}
-                                    onChange={(e) => setNewBatchYear(e.target.value)}
-                                    className="flex-1 p-3 border rounded text-base font-semibold focus:ring-2 focus:ring-[#004d00] outline-none"
-                                    min="2012"
-                                />
-                                <button
-                                    onClick={() => {
-                                        if (newBatchYear.trim()) {
-                                            createNewBatch(newBatchYear.trim());
-                                            setVolunteerTeacherForm({
-                                                ...volunteerTeacherForm,
-                                                batch: newBatchYear.trim(),
-                                            });
-                                            setNewBatchYear('');
-                                        }
-                                    }}
-                                    disabled={!newBatchYear.trim() || loading}
-                                    className="bg-[#004d00] text-white px-4 py-3 rounded-lg border border-[#ffd200] hover:bg-green-800 font-bold text-base disabled:opacity-50"
-                                >
-                                    Create Batch
-                                </button>
-                            </div>
+                                className="w-full p-3 border border-[#ffd200] rounded text-base font-semibold focus:ring-2 focus:ring-[#004d00] outline-none"
+                            />
                             <input
                                 type="text"
                                 placeholder="Name"

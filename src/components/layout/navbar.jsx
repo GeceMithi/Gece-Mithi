@@ -91,7 +91,7 @@ const Navbar = ({ contentType, setContentType }) => {
         { type: 'resources', label: 'Portfolios & Tools' },
 
         { type: 'admission', label: 'Admission' },
-        { type: 'studentportal', label: 'Portal Login' },
+        { type: 'studentportal', label: 'Login' },
 
         { type: 'contact', label: 'Contact' },
     ].filter(item => item.type !== 'admission' || admissionActive)), [admissionActive]);

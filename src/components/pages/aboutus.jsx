@@ -86,6 +86,15 @@ const SectionDropdown = ({ title, icon, children, isOpen, onClick }) => {
     );
 };
 
+const formatBatchLabel = (value) => {
+    const rawValue = String(value || '').trim();
+    const yearMatch = rawValue.match(/(?:20)?(\d{2})$/);
+
+    if (!yearMatch) return rawValue ? `Batch ${rawValue.replace(/^Batch\s+/i, '')}` : 'Batch';
+
+    return `Batch 2k${yearMatch[1]}`;
+};
+
 const AboutUs = () => {
     
     const [activeSection, setActiveSection] = useState(null);
@@ -501,16 +510,17 @@ const AboutUs = () => {
                     <div className="space-y-8">
                         {Object.entries(
                             volunteerTeachers.reduce((acc, teacher) => {
-                                if (!acc[teacher.batch]) {
-                                    acc[teacher.batch] = [];
+                                const batchLabel = formatBatchLabel(teacher.batch);
+                                if (!acc[batchLabel]) {
+                                    acc[batchLabel] = [];
                                 }
-                                acc[teacher.batch].push(teacher);
+                                acc[batchLabel].push(teacher);
                                 return acc;
                             }, {})
                         ).sort((a, b) => {
-                            // Sort batches by year - descending order from 2k25 to 2k12
-                            const batchOrder = ['Batch 2k30', 'Batch 2k29', 'Batch 2k28', 'Batch 2k27', 'Batch 2k26', 'Batch 2k25', 'Batch 2k24', 'Batch 2k23', 'Batch 2k22', 'Batch 2k21', 'Batch 2020', 'Batch 2k19', 'Batch 2k18', 'Batch 2k17', 'Batch 2k16', 'Batch 2k15', 'Batch 2k14', 'Batch 2k13', 'Batch 2k12'];
-                            return batchOrder.indexOf(a[0]) - batchOrder.indexOf(b[0]);
+                            const yearA = Number(a[0].match(/2k(\d{2})$/i)?.[1] || 0);
+                            const yearB = Number(b[0].match(/2k(\d{2})$/i)?.[1] || 0);
+                            return yearB - yearA;
                         }).map(([batch, teachers]) => (
                             <div key={batch} className="bg-white rounded-2xl border border-[#ffd200] p-4 shadow-sm">
                                 <div className="mb-4 pb-2 border-b border-[#ffd200] flex items-center gap-2">
@@ -520,7 +530,7 @@ const AboutUs = () => {
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                     {teachers.sort((a, b) => a.name.localeCompare(b.name)).map((teacher, idx) => (
-                                        <TeamCard key={teacher.id || idx} person={{ name: teacher.name, role: 'Volunteer Teacher', duration: teacher.batch }} showImage={false} />
+                                        <TeamCard key={teacher.id || idx} person={{ name: teacher.name, role: 'Volunteer Teacher', duration: batch }} showImage={false} />
                                     ))}
                                 </div>
                             </div>

@@ -19,6 +19,7 @@ class DataValidationService {
     }
 
     const errors = [];
+    const optionalFields = rules.optional || [];
     
     // Check required fields
     for (const field of rules.required) {
@@ -32,7 +33,7 @@ class DataValidationService {
       const value = data[field];
       
       // Skip validation if field is optional and empty/undefined
-      if (rules.optional.includes(field) && (!value || value === '')) {
+      if (optionalFields.includes(field) && (!value || value === '')) {
         continue;
       }
       

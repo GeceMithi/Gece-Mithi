@@ -22,10 +22,23 @@ export const retentionPolicy = {
 
 // Monitoring Configuration
 export const monitoringConfig = {
+    enabled: true,
     enableLogging: true,
     logLevel: "info",
     maxLogSize: 1000,
-    metricsInterval: 60 * 1000 // 1 minute in milliseconds
+    metricsInterval: 60 * 1000,
+    alerts: {
+        maxDocumentSize: 1024 * 1024,
+        maxDocuments: {
+            faculty: 100,
+            visiting_faculty: 50,
+            non_teaching_staff: 50,
+            volunteer_teachers: 200,
+            inservice_trainings: 100,
+            outlines: 1000,
+            notes: 1000
+        }
+    }
 };
 
 // Validation Rules
