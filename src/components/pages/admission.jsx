@@ -10,7 +10,6 @@ import {
   HeadingLevel, 
   AlignmentType 
 } from 'docx';
-import { saveAs } from 'file-saver';
 import { useToast } from '../../contexts/ToastContext';
 import { 
   GraduationCap, 
@@ -226,7 +225,9 @@ export default function App({ initialApplication = null }) {
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-      } catch (e) {}
+      } catch {
+        // Firebase submission already succeeded; the optional sheet sync may fail.
+      }
     } catch (err) {
       console.error('Admission submission failed:', err);
       showToast('There was a problem submitting your form. Please contact the administrator.', 'error');

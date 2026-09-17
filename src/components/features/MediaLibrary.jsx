@@ -64,7 +64,6 @@ const MediaLibrary = ({ category: initialCategory = "all" }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
     const [viewMode, setViewMode] = useState("grid"); // grid or list
-    const [selectedItem, setSelectedItem] = useState(null);
 
     // Fetch media items
     const fetchMediaItems = async () => {

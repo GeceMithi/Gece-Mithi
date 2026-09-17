@@ -105,7 +105,6 @@ const AboutUs = () => {
     const [visitingFaculty, setVisitingFaculty] = useState([]);
     const [nonTeachingStaff, setNonTeachingStaff] = useState([]);
     const [volunteerTeachers, setVolunteerTeachers] = useState([]);
-    const [inserviceTrainings, setInserviceTrainings] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [aboutSliderImages, setAboutSliderImages] = useState([]);
@@ -137,9 +136,6 @@ const AboutUs = () => {
                 const volunteerTeachersSnap = await getDocs(collection(db, "volunteer_teachers"));
                 setVolunteerTeachers(volunteerTeachersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-                const inserviceTrainingsSnap = await getDocs(collection(db, "inservice_trainings"));
-                setInserviceTrainings(inserviceTrainingsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-                
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -194,7 +190,7 @@ const AboutUs = () => {
         { id: 3, name: "Sir. Jeetandar Maheshwari", role: "Current Principal", duration: "2024 - Up to yet", img: principal3, isActive: true }
     ];
 
-    const facultyData = [
+    const _facultyData = [
         { id: 1, name: "Late Sir. Ganesh Mal", role: "Assistant Professor", duration: "2005 - 2008" },
         { id: 2, name: "Sir. Tikam Das", role: "Assistant Professor", duration: "2018 - 2022" },
         { id: 3, name: "Sir. Abdul Wahid Samoon", role: "Lecturer", duration: "2012 - 2018" },
@@ -214,7 +210,7 @@ const AboutUs = () => {
         { id: 2, name: "Mr. Bhaweesh Gul Meghwar", role: "Content Coordinator", desc: "Collected study material from college & Compiled notes.", duration: "2025 - Present", img: member2 }
     ];
 
-    const visitingFacultyData = [
+    const _visitingFacultyData = [
         { id: 1, name: "Sir. Arjun Lal", role: "Subject Specialist", duration: "2005 - 2012" },
         { id: 2, name: "Sir. Allah Jurio Dars", role: "Subject Specialist", duration: "2005 - 2012" },
         { id: 3, name: "Sir. Suresh Soni", role: "Subject Specialist", duration: "2005 - 2012" },
@@ -225,7 +221,7 @@ const AboutUs = () => {
         { id: 8, name: "Sir Mufti Muhammad Ishaque", role: "Visiting Faculty" }
     ];
 
-    const nonTeachingData = [
+    const _nonTeachingData = [
         { id: 1, name: "Mr. Manoj Kumar", role: "Computer Trainer", duration: "2016 - 2018" },
         { id: 2, name: "Mr. Ahmed Khan", role: "Senior Clerk", duration: "2016 - 2024" },
         { id: 3, name: "Mr. Rasool Bux", role: "Driver", duration: "2017 - 2021" },
@@ -236,7 +232,7 @@ const AboutUs = () => {
     ];
 
     // --- VOLUNTEER TEACHERS DATA ---
-    const volunteerBatches = [
+    const _volunteerBatches = [
         {
             batch: "Batch 2k17",
             members: [
@@ -318,6 +314,8 @@ const AboutUs = () => {
     }, [aboutSliderImages.length]);
 
     useEffect(() => {
+        // Keep the index valid when a shorter slider payload arrives from Firestore.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (currentSlide >= aboutSliderImages.length) setCurrentSlide(0);
     }, [currentSlide, aboutSliderImages.length]);
 

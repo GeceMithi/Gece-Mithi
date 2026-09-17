@@ -14,7 +14,7 @@ const normalizeGoogleDriveDownloadUrl = (rawUrl) => {
         if (driveId) {
             return `https://drive.google.com/uc?export=download&id=${driveId}`;
         }
-    } catch (error) {
+    } catch {
         // Ignore invalid URL parsing; fallback to regex.
     }
 
@@ -33,7 +33,6 @@ const AcademicCard = ({
     courseCode, 
     subject, 
     link, 
-    onAddNew, 
     onUpdateLink,
     showActions = true,
     compact = false 

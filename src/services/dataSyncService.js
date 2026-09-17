@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { academicDataDownload, pastPapersData, toolsData, portfolioData } from "../utils/data";
 
 class DataSyncService {

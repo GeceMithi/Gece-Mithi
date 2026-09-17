@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import StudentCard from './BatchesCard'; // Import the card we made above
 
 // Shared Icons

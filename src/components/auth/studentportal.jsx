@@ -4,9 +4,7 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut,
-    onAuthStateChanged,
-    sendPasswordResetEmail,
-    updateEmail
+    onAuthStateChanged
 } from "firebase/auth";
 import {
     doc,
@@ -14,7 +12,6 @@ import {
     getDoc,
     updateDoc,
     deleteDoc,
-    arrayUnion,
     collection,
     getDocs,
     addDoc
@@ -91,9 +88,8 @@ const App = () => {
     const [noticePriority, setNoticePriority] = useState('normal');
     const [noticePDF, setNoticePDF] = useState(null);
     const [publishedNotices, setPublishedNotices] = useState([]);
+    const [, setUploadProgress] = useState(0);
     const [isPublishingNotice, setIsPublishingNotice] = useState(false);
-    const [isUploadingPDF, setIsUploadingPDF] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
     const [isDeletingNotice, setIsDeletingNotice] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(null); // { action, label, ...params }
 
@@ -128,7 +124,7 @@ const App = () => {
     const isGlobalLoading = loading || isAuthLoading || uploading;
 
     const adminTabTitles = {
-        dashboard: 'All Students',
+        dashboard: 'Admin Panel',
         verifiedList: 'Verified List',
         noticeBoard: 'Notice Board',
         successStories: 'Success Stories',
@@ -182,8 +178,6 @@ const App = () => {
 
     const showToast = (message, type = 'success') => { setNotification({ show: true, message, type }); setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000); };
     const getEmail = (cnic) => `${cnic}@studentportal.com`;
-    const fetchStudentData = async (cnicOrId) => { let docRef = doc(db, "students", cnicOrId); let docSnap = await getDoc(docRef); if (docSnap.exists()) { setUserData(docSnap.data()); setStudentForm({ ...studentForm, ...docSnap.data().personalInfo }); } else { setStudentForm(prev => ({ ...prev, cnic: cnicOrId })); } };
-
     const fetchAllStudentsData = async () => {
         console.log("Fetching all students data...");
         try {
@@ -366,9 +360,131 @@ const App = () => {
     const handleCancelEdit = () => { setIsEditing(false); if (userData?.personalInfo) { setStudentForm(userData.personalInfo); } };
     const openUploadModal = (id) => { setSelectedChallanId(id); const challan = userData.challans.find(c => c.id === id); setUploadForm({ amount: challan.amount, mode: 'BANK DEPOSIT', date: '', file: null }); setShowUploadModal(true); };
     const handleViewReceipt = (url) => { setReceiptUrl(url); setShowReceiptModal(true); };
-    const handleAdminAction = async (studentCnic, challanId, newStatus) => { try { const studentRef = doc(db, "students", studentCnic); const studentSnap = await getDoc(studentRef); const studentData = studentSnap.data(); const updatedChallans = studentData.challans.map(ch => { if (ch.id === challanId) return { ...ch, status: newStatus }; return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if (searchedStudent && searchedStudent.cnic === studentCnic) { setSearchedStudent({ ...searchedStudent, challans: updatedChallans }); } showToast(`Challan ${newStatus}`, "success"); } catch (error) { showToast("Failed.", "error"); } };
+    const handleAdminAction = async (studentCnic, challanId, newStatus) => { try { const studentRef = doc(db, "students", studentCnic); const studentSnap = await getDoc(studentRef); const studentData = studentSnap.data(); const updatedChallans = studentData.challans.map(ch => { if (ch.id === challanId) return { ...ch, status: newStatus }; return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if (searchedStudent && searchedStudent.cnic === studentCnic) { setSearchedStudent({ ...searchedStudent, challans: updatedChallans }); } showToast(`Challan ${newStatus}`, "success"); } catch { showToast("Failed.", "error"); } };
     const openEditModal = (challan, studentCnic) => { setEditForm({ id: challan.id, studentCnic: studentCnic, part: challan.part, batch: challan.batch, amount: challan.amount, status: challan.status }); setShowEditModal(true); };
-    const handleEditSubmit = async (e) => { e.preventDefault(); try { const studentRef = doc(db, "students", editForm.studentCnic); const studentSnap = await getDoc(studentRef); const updatedChallans = studentSnap.data().challans.map(ch => { if (ch.id === editForm.id) { return { ...ch, part: editForm.part, batch: editForm.batch, amount: editForm.amount, status: editForm.status }; } return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if (searchedStudent && searchedStudent.cnic === editForm.studentCnic) { setSearchedStudent({ ...searchedStudent, challans: updatedChallans }); } setShowEditModal(false); showToast("Record Updated.", "success"); } catch (error) { showToast("Update Failed.", "error"); } };
+    const handleEditSubmit = async (e) => { e.preventDefault(); try { const studentRef = doc(db, "students", editForm.studentCnic); const studentSnap = await getDoc(studentRef); const updatedChallans = studentSnap.data().challans.map(ch => { if (ch.id === editForm.id) { return { ...ch, part: editForm.part, batch: editForm.batch, amount: editForm.amount, status: editForm.status }; } return ch; }); await updateDoc(studentRef, { challans: updatedChallans }); await fetchAllStudentsData(); if (searchedStudent && searchedStudent.cnic === editForm.studentCnic) { setSearchedStudent({ ...searchedStudent, challans: updatedChallans }); } setShowEditModal(false); showToast("Record Updated.", "success"); } catch { showToast("Update Failed.", "error"); } };
+
+    const handleDeleteChallan = (studentCnic, challanId) => {
+        setDeleteConfirm({ action: 'deleteChallan', studentCnic, challanId, label: 'this challan' });
+    };
+
+    const handleDownloadPdf = (challan) => {
+        generateSpecificChallanPDF(
+            studentForm.fullName,
+            studentForm.fatherName,
+            challan.part,
+            challan.batch,
+            challan.challanNo,
+            challan.amount,
+            challan.statusType,
+        );
+    };
+
+    const saveProfile = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+        try {
+            const studentCnic = user?.email?.split('@')[0];
+            if (!studentCnic) throw new Error('Student account could not be identified');
+
+            await updateDoc(doc(db, 'students', studentCnic), { personalInfo: studentForm });
+            setUserData((currentData) => ({ ...currentData, personalInfo: studentForm }));
+            setIsEditing(false);
+            showToast('Profile saved successfully.', 'success');
+        } catch (error) {
+            console.error('Profile save failed:', error);
+            showToast(`Profile save failed: ${error.message}`, 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const generateChallan = async (part, batch, statusType) => {
+        setLoading(true);
+        try {
+            const studentCnic = user?.email?.split('@')[0];
+            if (!studentCnic) throw new Error('Student account could not be identified');
+
+            const existingChallans = userData?.challans || [];
+            const duplicate = existingChallans.some((challan) => challan.part === part && challan.batch === batch);
+            if (duplicate) {
+                showToast('A challan already exists for this part and batch.', 'error');
+                return;
+            }
+
+            const newChallan = {
+                id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+                challanNo: `CH-${Date.now()}`,
+                part,
+                batch,
+                statusType,
+                amount: statusType === 'Hosteller' ? '1300' : '900',
+                status: 'Pending Payment',
+                date: new Date().toISOString(),
+            };
+            const updatedChallans = [...existingChallans, newChallan];
+            await updateDoc(doc(db, 'students', studentCnic), { challans: updatedChallans });
+            setUserData((currentData) => ({ ...currentData, challans: updatedChallans }));
+            showToast('Challan generated successfully.', 'success');
+        } catch (error) {
+            console.error('Challan generation failed:', error);
+            showToast(`Challan generation failed: ${error.message}`, 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUploadFileChange = (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast('Please select an image receipt.', 'error');
+            return;
+        }
+        if (file.size > 800 * 1024) {
+            showToast('Receipt image must be smaller than 800KB.', 'error');
+            return;
+        }
+        setUploadForm((currentForm) => ({ ...currentForm, file }));
+    };
+
+    const handleUploadSubmit = async (event) => {
+        event.preventDefault();
+        if (!selectedChallanId || !uploadForm.file) {
+            showToast('Please select a receipt image.', 'error');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const studentCnic = user?.email?.split('@')[0];
+            const uploadResult = await cloudinaryService.uploadFile(uploadForm.file, 'receipts');
+            const studentSnapshot = await getDoc(doc(db, 'students', studentCnic));
+            if (!studentSnapshot.exists()) throw new Error('Student record not found');
+
+            const updatedChallans = (studentSnapshot.data().challans || []).map((challan) => (
+                challan.id === selectedChallanId
+                    ? {
+                        ...challan,
+                        amount: uploadForm.amount,
+                        date: uploadForm.date,
+                        receiptImageUrl: uploadResult?.url,
+                        status: 'Pending Verification',
+                    }
+                    : challan
+            ));
+            await updateDoc(doc(db, 'students', studentCnic), { challans: updatedChallans });
+            setUserData((currentData) => ({ ...currentData, challans: updatedChallans }));
+            setShowUploadModal(false);
+            setUploadForm({ amount: '', mode: 'BANK DEPOSIT', date: '', file: null });
+            showToast('Receipt uploaded successfully.', 'success');
+        } catch (error) {
+            console.error('Receipt upload failed:', error);
+            showToast(`Receipt upload failed: ${error.message}`, 'error');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     // --- NOTICE BOARD FUNCTIONS ---
     const fetchNotices = async () => {
@@ -563,28 +679,6 @@ const App = () => {
         }
     };
 
-    const testCloudinaryConnectivity = async () => {
-        try {
-            showToast('Testing Cloudinary connectivity...', 'info');
-            // Use the Cloudinary base URL to test reachability
-            const cloudName = (await import('../../config/cloudinaryConfig')).CLOUDINARY_CONFIG.cloudName;
-            const testUrl = `https://res.cloudinary.com/${cloudName}/image/upload/`;
-            const res = await fetch(testUrl, { method: 'GET' });
-            if (!res.ok && res.type !== 'opaque') {
-                console.error('Cloudinary connectivity unexpected response:', res.status);
-                showToast(`Cloudinary connectivity failed: HTTP ${res.status}`, 'error');
-                return false;
-            }
-            showToast('Cloudinary reachable ✅', 'success');
-            return true;
-        } catch (err) {
-            console.error('Cloudinary connectivity test exception:', err);
-            showToast('Cloudinary connectivity test failed: Network/CORS', 'error');
-            return false;
-        }
-    };
-
-
     const generateAdminPDF = () => {
         const filteredStudents = allPaidStudents.filter(st => adminFilterPart === 'All' || st.part === adminFilterPart);
 
@@ -595,8 +689,6 @@ const App = () => {
 
         const doc = new jsPDF('l', 'mm', 'a4');
         const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-
         // Header
         doc.setFontSize(16);
         doc.setTextColor(0, 77, 0);
@@ -638,42 +730,6 @@ const App = () => {
 
         doc.save(`Verified_List_${adminFilterPart}_${new Date().toISOString().split('T')[0]}.pdf`);
         showToast("PDF downloaded successfully", "success");
-    };
-
-    const convertPDFToBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                try {
-                    const result = reader.result;
-                    if (result && result.includes('base64')) {
-                        resolve(result);
-                    } else {
-                        reject(new Error('Failed to convert PDF to base64'));
-                    }
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(file);
-        });
-    };
-
-    const handleStudentPasswordReset = async () => {
-        const targetEmail = studentForm.email && studentForm.email.includes('@') ? studentForm.email : user.email;
-        if (window.confirm(`Send password reset link to ${targetEmail}?`)) {
-            setLoading(true);
-            try {
-                await sendPasswordResetEmail(auth, targetEmail);
-                showToast(`Reset link sent to ${targetEmail}.`, "success");
-            } catch (error) {
-                console.error("Reset Error", error);
-                showToast(error.message, "error");
-            } finally {
-                setLoading(false);
-            }
-        }
     };
 
     const TopLoaderBar = () => (<div className="fixed top-0 left-0 w-full h-1 bg-blue-200 z-50 overflow-hidden"> <div className="h-full bg-yellow-400 animate-pulse w-full origin-left-right scale-x-50"></div> <style>{` @keyframes loading-bar { 0% { transform: translateX(-100%); } 50% { transform: translateX(50%); } 100% { transform: translateX(200%); } } .origin-left-right { animation: loading-bar 1.5s infinite linear; } `}</style> </div>);

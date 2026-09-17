@@ -111,7 +111,7 @@ export const getOptimizedUrl = (publicId, options = {}) => {
  * @param {string} publicId - Cloudinary public ID
  * @returns {Promise<Object>} - Delete result
  */
-export const deleteImage = async (publicId) => {
+export const deleteImage = async () => {
     // Note: This requires server-side implementation for security
     // Client-side deletion is not recommended for Cloudinary
     console.warn('Cloudinary deletion requires server-side implementation');

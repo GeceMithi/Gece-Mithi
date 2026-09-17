@@ -18,7 +18,7 @@ export const convertShareUrlToDownloadUrl = (rawUrl) => {
         if (driveId && url.hostname.includes('google.com')) {
             return `https://drive.google.com/uc?export=download&id=${driveId}`;
         }
-    } catch (error) {
+    } catch {
         // Fall back to the supported share-link formats below.
     }
 

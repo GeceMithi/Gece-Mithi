@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase/firebase";
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import cloudinaryService from "../../services/cloudinaryService";
 
 // Icons
@@ -64,7 +64,7 @@ const CloudinaryMediaManager = ({ defaultCategory = "outline", lockCategory = fa
     // Data states
     const [mediaItems, setMediaItems] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [, setUploadProgress] = useState(0);
 
     // Fetch all media items
     const fetchMediaItems = async () => {
@@ -216,7 +216,7 @@ const CloudinaryMediaManager = ({ defaultCategory = "outline", lockCategory = fa
     };
 
     // Delete media item
-    const deleteMediaItem = async (id, storagePath) => {
+    const deleteMediaItem = async (id) => {
         if (!window.confirm("Are you sure you want to delete this media item?")) return;
 
         setLoading(true);
@@ -312,7 +312,7 @@ const CloudinaryMediaManager = ({ defaultCategory = "outline", lockCategory = fa
                                 name="fileSource"
                                 value="upload"
                                 checked={mediaForm.fileSource === "upload"}
-                                onChange={(e) => setMediaForm({ ...mediaForm, fileSource: "upload", fileUrl: "" })}
+                                onChange={() => setMediaForm({ ...mediaForm, fileSource: "upload", fileUrl: "" })}
                                 className="mr-2"
                             />
                             <span className="text-gray-700 font-medium">Direct File Upload</span>
@@ -323,7 +323,7 @@ const CloudinaryMediaManager = ({ defaultCategory = "outline", lockCategory = fa
                                 name="fileSource"
                                 value="url"
                                 checked={mediaForm.fileSource === "url"}
-                                onChange={(e) => setMediaForm({ ...mediaForm, fileSource: "url", selectedFile: null })}
+                                onChange={() => setMediaForm({ ...mediaForm, fileSource: "url", selectedFile: null })}
                                 className="mr-2"
                             />
                             <span className="text-gray-700 font-medium">URL Input</span>

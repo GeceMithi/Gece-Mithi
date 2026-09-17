@@ -8,7 +8,6 @@ const SuccessStoriesManagement = () => {
     const { 
         stories, 
         loading, 
-        error, 
         addSuccessStory, 
         updateSuccessStory, 
         deleteSuccessStory, 
@@ -98,10 +97,16 @@ const SuccessStoriesManagement = () => {
             };
 
             if (editingStory) {
-                await updateSuccessStory(editingStory.id, storyData);
+                const result = await updateSuccessStory(editingStory.id, storyData);
+                if (!result?.success) {
+                    throw new Error(result?.error || 'Unable to update success story');
+                }
                 alert('✅ Success story updated successfully!');
             } else {
-                await addSuccessStory(storyData);
+                const result = await addSuccessStory(storyData);
+                if (!result?.success) {
+                    throw new Error(result?.error || 'Unable to add success story');
+                }
                 alert('✅ Success story added successfully!');
             }
 
@@ -152,7 +157,10 @@ const SuccessStoriesManagement = () => {
     const handleDelete = async (storyId) => {
         if (confirm('Are you sure you want to delete this success story?')) {
             try {
-                await deleteSuccessStory(storyId);
+                const result = await deleteSuccessStory(storyId);
+                if (!result?.success) {
+                    throw new Error(result?.error || 'Unable to delete success story');
+                }
                 alert('✅ Success story deleted successfully!');
             } catch (error) {
                 console.error('❌ Error deleting story:', error);
@@ -164,7 +172,10 @@ const SuccessStoriesManagement = () => {
     // Handle toggle status
     const handleToggleStatus = async (storyId, isActive) => {
         try {
-            await toggleStoryStatus(storyId, isActive);
+            const result = await toggleStoryStatus(storyId, isActive);
+            if (!result?.success) {
+                throw new Error(result?.error || 'Unable to update story status');
+            }
             alert(`✅ Story ${isActive ? 'activated' : 'deactivated'} successfully!`);
         } catch (error) {
             console.error('❌ Error toggling status:', error);

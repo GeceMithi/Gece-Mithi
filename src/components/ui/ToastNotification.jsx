@@ -1,27 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const ToastNotification = ({ message, type = 'success', isVisible, onClose }) => {
     const [shouldShow, setShouldShow] = useState(false);
 
-    useEffect(() => {
-        if (isVisible) {
-            setShouldShow(true);
-            // Auto close after 3 seconds
-            const timer = setTimeout(() => {
-                handleClose();
-            }, 3000);
-            return () => clearTimeout(timer);
-        } else {
-            setShouldShow(false);
-        }
-    }, [isVisible]);
-
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setShouldShow(false);
         setTimeout(() => {
             onClose();
         }, 300); // Wait for animation to complete
-    };
+    }, [onClose]);
+
+    useEffect(() => {
+        if (isVisible) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setShouldShow(true);
+            const timer = setTimeout(handleClose, 3000);
+            return () => clearTimeout(timer);
+        }
+        setShouldShow(false);
+    }, [isVisible, handleClose]);
 
     if (!isVisible) return null;
 

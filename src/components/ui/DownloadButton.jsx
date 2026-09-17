@@ -13,7 +13,7 @@ const normalizeGoogleDriveDownloadUrl = (rawUrl) => {
         if (driveId) {
             return `https://drive.google.com/uc?export=download&id=${driveId}`;
         }
-    } catch (error) {
+    } catch {
         // Ignore invalid URL parsing; fallback to regex-based conversion below.
     }
 

@@ -1,7 +1,8 @@
 // Data Validation Service for Firebase Firestore
 // This service validates data before saving to ensure data integrity
 
-import { validationRules, monitoringConfig } from '../config/cloudinaryConfig';
+import { monitoringConfig } from '../config/cloudinaryConfig';
+import { validationRules } from '../firebase/firebaseConfig';
 
 class DataValidationService {
   constructor() {

@@ -1,4 +1,3 @@
-import dynamicDataService from "./dynamicDataService";
 import { academicDataDownload, pastPapersData, toolsData, portfolioData } from "../utils/data";
 
 class HybridDataService {

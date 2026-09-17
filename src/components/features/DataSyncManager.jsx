@@ -15,7 +15,7 @@ const DataSyncManager = () => {
         try {
             const status = await dataSyncService.getSyncStatus();
             setSyncStatus(status);
-        } catch (error) {
+        } catch {
             showMessage('Error fetching sync status', 'error');
         }
     };
@@ -32,7 +32,7 @@ const DataSyncManager = () => {
             const results = await dataSyncService.syncAllData();
             showMessage(`Sync completed! Academic: ${results.academic}, Past Papers: ${results.pastPapers}, Tools: ${results.tools}, Portfolios: ${results.portfolios}`, 'success');
             await fetchSyncStatus();
-        } catch (error) {
+        } catch {
             showMessage('Sync failed. Please try again.', 'error');
         } finally {
             setLoading(false);
@@ -45,7 +45,7 @@ const DataSyncManager = () => {
             const count = await dataSyncService.syncAcademicData();
             showMessage(`Synced ${count} academic items`, 'success');
             await fetchSyncStatus();
-        } catch (error) {
+        } catch {
             showMessage('Academic sync failed', 'error');
         } finally {
             setLoading(false);
@@ -58,7 +58,7 @@ const DataSyncManager = () => {
             const count = await dataSyncService.syncPastPapersData();
             showMessage(`Synced ${count} past paper items`, 'success');
             await fetchSyncStatus();
-        } catch (error) {
+        } catch {
             showMessage('Past papers sync failed', 'error');
         } finally {
             setLoading(false);
@@ -71,7 +71,7 @@ const DataSyncManager = () => {
             const count = await dataSyncService.syncToolsData();
             showMessage(`Synced ${count} tool items`, 'success');
             await fetchSyncStatus();
-        } catch (error) {
+        } catch {
             showMessage('Tools sync failed', 'error');
         } finally {
             setLoading(false);
@@ -84,7 +84,7 @@ const DataSyncManager = () => {
             const count = await dataSyncService.syncPortfolioData();
             showMessage(`Synced ${count} portfolio items`, 'success');
             await fetchSyncStatus();
-        } catch (error) {
+        } catch {
             showMessage('Portfolio sync failed', 'error');
         } finally {
             setLoading(false);
@@ -101,7 +101,7 @@ const DataSyncManager = () => {
             const count = await dataSyncService.clearAllData();
             showMessage(`Cleared ${count} items from Firebase`, 'success');
             setSyncStatus(null);
-        } catch (error) {
+        } catch {
             showMessage('Clear operation failed', 'error');
         } finally {
             setLoading(false);

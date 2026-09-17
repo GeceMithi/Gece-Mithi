@@ -188,9 +188,9 @@ const useResourceData = () => {
             console.log(`📋 Found ${querySnapshot.docs.length} records to remove`);
             
             const deletePromises = [];
-            querySnapshot.docs.forEach(doc => {
-                console.log(`🗑️ Removing semester record: ${doc.id}`);
-                deletePromises.push(deleteDoc(doc(db, 'media_files', doc.id)));
+            querySnapshot.docs.forEach((resourceDoc) => {
+                console.log(`🗑️ Removing semester record: ${resourceDoc.id}`);
+                deletePromises.push(deleteDoc(doc(db, 'media_files', resourceDoc.id)));
             });
             
             if (deletePromises.length > 0) {
@@ -272,9 +272,9 @@ const useResourceData = () => {
             }
             
             const deletePromises = [];
-            querySnapshot.docs.forEach(doc => {
-                console.log(`🗑️ Deleting document: ${doc.id} - ${doc.data().title || doc.data().subject}`);
-                deletePromises.push(deleteDoc(doc(db, 'academic_data', doc.id)));
+            querySnapshot.docs.forEach((resourceDoc) => {
+                console.log(`🗑️ Deleting document: ${resourceDoc.id} - ${resourceDoc.data().title || resourceDoc.data().subject}`);
+                deletePromises.push(deleteDoc(doc(db, 'academic_data', resourceDoc.id)));
             });
             
             await Promise.all(deletePromises);

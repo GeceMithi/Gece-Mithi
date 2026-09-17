@@ -55,3 +55,5 @@ const addSampleData = async () => {
 
 // Uncomment to run
 // addSampleData();
+
+export { addSampleData };

@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Universal Image Upload Utility for Profile Pictures and Slides
 // Uses Cloudinary for image uploads and Firebase Storage for text files
 

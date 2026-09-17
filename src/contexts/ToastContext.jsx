@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import ToastNotification from '../components/ui/ToastNotification';
 
+/* eslint-disable react-refresh/only-export-components */
+
 const ToastContext = createContext();
 
 export const useToast = () => {

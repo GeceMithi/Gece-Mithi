@@ -7,7 +7,6 @@ const DynamicYearBox = ({
     semesters, 
     type, 
     title,
-    onUpdateLink,
     showAddButton = false,
     animationDelay = 0
 }) => {

@@ -95,7 +95,7 @@ const AcademicDataManager = () => {
         }
     };
 
-    const handleUpdateLink = async (courseId) => {
+    const handleUpdateLink = async () => {
         if (!form.link) {
             alert("Please provide a link!");
             return;

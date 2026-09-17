@@ -11,16 +11,6 @@ const PartCard = ({ part, index, children }) => {
         return titles[year] || `Year ${year}`;
     };
 
-    const getYearLabel = (year) => {
-        const labels = {
-            1: "First Year",
-            2: "Second Year",
-            3: "Third Year",
-            4: "Fourth Year",
-        };
-        return labels[year] || `Year ${year}`;
-    };
-
     return (
         <div 
             className="year-block p-6 bg-gray-100 border-t-8 border-green-700 rounded-3xl shadow-lg hover:shadow-xl transition duration-300 content-entry-animation"

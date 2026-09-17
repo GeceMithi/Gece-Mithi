@@ -63,11 +63,11 @@ const Developer = () => {
                         </div>
                     </div>
                     <div className="grid gap-4 md:grid-cols-3">
-                        {services.map(({ icon: Icon, title, description }) => (
-                            <article key={title} className="border border-white/10 bg-white/[0.06] p-5 transition hover:-translate-y-1 hover:border-[#ffd200]/60">
-                                <Icon className="text-[#ffd200]" size={25} />
-                                <h3 className="mt-8 text-lg font-bold">{title}</h3>
-                                <p className="mt-3 text-sm leading-6 text-white/55">{description}</p>
+                        {services.map((service) => (
+                            <article key={service.title} className="border border-white/10 bg-white/[0.06] p-5 transition hover:-translate-y-1 hover:border-[#ffd200]/60">
+                                {React.createElement(service.icon, { className: 'text-[#ffd200]', size: 25 })}
+                                <h3 className="mt-8 text-lg font-bold">{service.title}</h3>
+                                <p className="mt-3 text-sm leading-6 text-white/55">{service.description}</p>
                             </article>
                         ))}
                     </div>

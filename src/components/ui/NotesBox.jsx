@@ -1,7 +1,7 @@
 import React from 'react';
 import NotesCard from './NotesCard';
 
-const NotesBox = ({ title, items, emptyText, compact = false }) => {
+const NotesBox = ({ title, items, compact = false }) => {
     if (!items || items.length === 0) {
         return null;
     }

@@ -106,12 +106,7 @@ export default function NoticeBoard() {
         return res.json();
     };
 
-    const getCurrentDate = () => {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date().toLocaleDateString('en-US', options);
-    };
-
-    const formatDate = (date) => {
+    const formatDate = () => {
         const d = new Date();
         const day = String(d.getDate()).padStart(2, '0');
         const month = String(d.getMonth() + 1).padStart(2, '0');

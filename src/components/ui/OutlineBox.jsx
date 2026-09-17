@@ -1,7 +1,7 @@
 import React from 'react';
 import OutlineCard from './OutlineCard';
 
-const OutlineBox = ({ title, items, emptyText, compact = false }) => {
+const OutlineBox = ({ title, items, compact = false }) => {
     if (!items || items.length === 0) {
         return null;
     }

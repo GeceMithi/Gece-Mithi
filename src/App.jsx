@@ -89,6 +89,7 @@ export default function App() {
         const urlParams = new URLSearchParams(window.location.search);
         const contentParam = urlParams.get('content');
         if (contentParam === 'developer' || contentParam === 'admission' || urlParams.get('printApplication') === '1') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setContentType(contentParam === 'developer' ? 'developer' : 'admission');
         }
     }, []);
