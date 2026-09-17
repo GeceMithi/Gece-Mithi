@@ -357,6 +357,11 @@ export const academicDataDownload = [
         notesLink: "https://drive.usercontent.google.com/download?id=1aCUGn-vHE2vrY7GzvYGJ_nVKO-ol6FV1&export=download&authuser=0&confirm=t&uuid=0340ca23-b126-4e4a-aa17-935d98d26c9b&at=ANTm3cxMmAxCkEDi2kkKl6hGlReV:1768587463267",
         pastPaperLink: "https://drive.google.com/d/Y2S3C5_PP",
       },
+      {
+        name: "EED-441 Development Portfolio",
+        outlineLink:
+          "https://drive.usercontent.google.com/download?id=1wyN09OA1AsyONFVaOiMIHd_9QU0S0wwB&export=download&authuser=2&confirm=t&uuid=c056bb3a-e2aa-470a-8fd8-e5526cf2fa66&at=ANTm3cxuP2iXfovGlOGVv5EBIhN5:1768475557358",
+      },
     ],
   },
   {
@@ -397,6 +402,11 @@ export const academicDataDownload = [
           "https://drive.usercontent.google.com/download?id=1LN-1T6LEnnjeHJZ3mB1KLok6Z8FeZXt8&export=download&authuser=2&confirm=t&uuid=c1566779-f8e5-4dcf-adbe-65a186d34e4a&at=ANTm3cyHWhytm5PA9QCkJhLxMJAL:1768475935926",
         notesLink: "https://drive.usercontent.google.com/download?id=1fPr7NOVYgd3yuHJvefLvoXQeQefpLagF&export=download&authuser=0&confirm=t&uuid=5ad59a99-1f76-486f-abd2-3224f0272e5b&at=ANTm3czljWXqOIph-GlB36sDKtf3:1768544743979",
         pastPaperLink: "https://drive.google.com/d/Y2S4C4_PP",
+      },
+      {
+        name: "EED-412 Professional Portfolio",
+        outlineLink:
+          "https://drive.usercontent.google.com/download?id=1mxZvYdqtKp24i7B7dG2pXmYZ6Teyzzrz&export=download&authuser=2&confirm=t&uuid=12131b9f-779f-490e-8780-d6f61ae64426&at=ANTm3czU47RhcA7CHRO1pd8lZewF:1768475639087",
       },
     ],
   },
@@ -520,6 +530,11 @@ export const academicDataDownload = [
         notesLink: "https://drive.usercontent.google.com/download?id=1W8rw0a3S8i6__Zjw4HMiEZP5kGJebB8S&export=download&authuser=0&confirm=t&uuid=be04dba3-83f7-4b09-88f2-820b10088f13&at=ANTm3cz31cKrR4Zoyi7-F5sSwy76:1768545294699",
         pastPaperLink: "https://drive.google.com/d/Y4S7C5_PP",
       },
+      {
+        name: "EED-684 Reading Portfolio",
+        outlineLink:
+          "https://drive.usercontent.google.com/download?id=1_Y3rCHZYsiWdLfFqk7RTW-xMQQoz9MSA&export=download&authuser=2&confirm=t&uuid=2c509379-d610-49f5-9b96-c4ae29f3d58e&at=ANTm3cw5n3U_TZD0N66WsBY-5tIU:1768476642982",
+      },
     ],
   },
   {
@@ -539,6 +554,16 @@ export const academicDataDownload = [
          "https://drive.usercontent.google.com/download?id=1fJ4JESCllinXNq99ul9bAVoazFqzkDH4&export=download&authuser=2&confirm=t&uuid=64ccdb0e-d877-4ccf-b04c-3b0a6c76c776&at=ANTm3cwiXmUmRY9qbSlKJnILcUpu:1768476768367",
         notesLink: "https://drive.google.com/d/Y4S8C2_Notes",
         pastPaperLink: "https://drive.google.com/d/Y4S8C2_PP",
+      },
+      {
+        name: "EED-624 Research Project",
+        outlineLink:
+          "https://drive.usercontent.google.com/download?id=1HXY1DVDq3r4ImalmWCp7vYArPZHy5U9B&export=download&authuser=2&confirm=t&uuid=8c7068dc-4e88-4b67-8406-5557d623aaf3&at=ANTm3cxvJIYNz9EeTqBA6NyDBa_6:1768476788283",
+      },
+      {
+        name: "EED-642 Advance Portfolio",
+        outlineLink:
+          "https://drive.usercontent.google.com/download?id=18kixbCnGp1a1TlYmWiiZb2pbR6JY9owM&export=download&authuser=2&confirm=t&uuid=4bdaab46-8dd8-427e-acc4-1d7bd580f574&at=ANTm3cxRGMNpPstBFK540_yFRGg7:1768476715775",
       },
     ],
   },

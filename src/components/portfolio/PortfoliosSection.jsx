@@ -10,7 +10,7 @@ const portfolioTypes = [
   { type: 'research', label: 'Research Thesis' }
 ];
 
-const defaultItemTypes = ['outline', 'handout', 'portfolio'];
+const defaultItemTypes = ['handout', 'portfolio'];
 
 const PortfoliosSection = ({ sections, onDelete }) => {
   // Agar parent se sections pass na ho toh live hook se fetch karega

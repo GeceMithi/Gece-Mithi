@@ -21,7 +21,7 @@ const ResourceManagement = () => {
 
     const [portfolioForm, setPortfolioForm] = useState({
         portfolioType: 'development',
-        itemType: 'outline',
+        itemType: 'handout',
         part: '1',
         semester: '1',
         url: ''
@@ -175,7 +175,7 @@ const ResourceManagement = () => {
 
         if (result.success) {
             alert('Portfolio item saved successfully! It will appear on the Portfolios Page.');
-            setPortfolioForm({ portfolioType: 'development', itemType: 'outline', part: '1', semester: '1', url: '' });
+            setPortfolioForm({ portfolioType: 'development', itemType: 'handout', part: '1', semester: '1', url: '' });
         } else {
             alert(`Failed to save portfolio: ${result.error}`);
         }
@@ -363,7 +363,6 @@ const ResourceManagement = () => {
                                         onChange={(e) => setPortfolioForm(prev => ({ ...prev, itemType: e.target.value }))}
                                         className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500  outline-none"
                                     >
-                                        <option value="outline">Outline</option>
                                         <option value="handout">Handout</option>
                                         <option value="portfolio">Portfolio</option>
                                     </select>

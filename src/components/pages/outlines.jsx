@@ -69,17 +69,21 @@ const renderYearBlock = (yearBlock, linkKey, buttonText, titlePrefix = 'Previous
                         Semester {semester.semester}
                     </h3>
                     <ul className="space-y-3">
-                        {(semester.courses || []).map((course, i) => (
-                            <li key={`${titlePrefix}-${yearBlock.year}-${semester.semester}-${i}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg border border-[#ffd200] transition duration-200 hover:bg-indigo-50">
-                                <span className="text-gray-700 font-medium mb-2 sm:mb-0">
-                                    {course.name}
-                                </span>
-                                <DownloadLink
-                                    linkUrl={course[linkKey] || course.outlineLink || course.notesLink || ''}
-                                    buttonText={buttonText}
-                                />
-                            </li>
-                        ))}
+                        {(semester.courses || []).map((course, i) => {
+                            const courseDownloadLink = course.outlineLink || course[linkKey] || course.notesLink || '';
+
+                            return (
+                                <li key={`${titlePrefix}-${yearBlock.year}-${semester.semester}-${i}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg border border-[#ffd200] transition duration-200 hover:bg-indigo-50">
+                                    <span className="text-gray-700 font-medium mb-2 sm:mb-0">
+                                        {course.name}
+                                    </span>
+                                    <DownloadLink
+                                        linkUrl={courseDownloadLink}
+                                        buttonText={buttonText}
+                                    />
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             ))}

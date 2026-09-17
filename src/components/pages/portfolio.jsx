@@ -10,7 +10,6 @@ const PORTFOLIO_CONFIG = [
 ];
 
 const ITEM_TYPES = [
-  { key: 'outline', label: 'Outline' },
   { key: 'handout', label: 'Handout' },
   { key: 'portfolio', label: 'Portfolio' },
 ];

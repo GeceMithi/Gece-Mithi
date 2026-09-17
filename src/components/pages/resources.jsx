@@ -12,7 +12,6 @@ const portfolioTypes = [
 ];
 
 const portfolioItems = [
-    { type: 'outline', label: 'Outline' },
     { type: 'handout', label: 'Handout' },
     { type: 'portfolio', label: 'Portfolio' }
 ];
