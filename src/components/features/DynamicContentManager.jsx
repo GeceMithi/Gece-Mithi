@@ -223,6 +223,15 @@ const Icons = {
 };
 
 const DynamicContentManager = () => {
+    const handleDurationChange = (setForm, form, value) => {
+        const currentYear = String(new Date().getFullYear());
+        const duration = value.trim() === currentYear
+            ? `${currentYear} - Up to yet`
+            : value;
+
+        setForm({ ...form, duration });
+    };
+
     // Form states for different content types
     const [facultyForm, setFacultyForm] = useState({
         name: "",
@@ -810,8 +819,9 @@ const DynamicContentManager = () => {
                                     type="text"
                                     placeholder="Duration (e.g., 2019-Present)"
                                     value={facultyForm.duration}
+                                    onBlur={(e) => handleDurationChange(setFacultyForm, facultyForm, e.target.value)}
                                     onChange={(e) =>
-                                        setFacultyForm({ ...facultyForm, duration: e.target.value })
+                                        handleDurationChange(setFacultyForm, facultyForm, e.target.value)
                                     }
                                     className="w-full p-3 border rounded text-base font-semibold"
                                 />
@@ -1072,11 +1082,9 @@ const DynamicContentManager = () => {
                                     type="text"
                                     placeholder="Duration (e.g., 2019-Present)"
                                     value={visitingFacultyForm.duration}
+                                    onBlur={(e) => handleDurationChange(setVisitingFacultyForm, visitingFacultyForm, e.target.value)}
                                     onChange={(e) =>
-                                        setVisitingFacultyForm({
-                                            ...visitingFacultyForm,
-                                            duration: e.target.value,
-                                        })
+                                        handleDurationChange(setVisitingFacultyForm, visitingFacultyForm, e.target.value)
                                     }
                                     className="w-full p-3 border rounded text-base font-semibold"
                                 />
@@ -1161,11 +1169,9 @@ const DynamicContentManager = () => {
                                     type="text"
                                     placeholder="Duration (e.g., 2019-Present)"
                                     value={nonTeachingForm.duration}
+                                    onBlur={(e) => handleDurationChange(setNonTeachingForm, nonTeachingForm, e.target.value)}
                                     onChange={(e) =>
-                                        setNonTeachingForm({
-                                            ...nonTeachingForm,
-                                            duration: e.target.value,
-                                        })
+                                        handleDurationChange(setNonTeachingForm, nonTeachingForm, e.target.value)
                                     }
                                     className="w-full p-3 border rounded text-base font-semibold"
                                 />
