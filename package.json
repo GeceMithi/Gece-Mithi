@@ -7,9 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:build": "vite build && npx cap sync",
+    "cap:run": "npx cap open android",
+    "assets:generate": "npx @capacitor/assets generate --android --assetPath src/assets && npx cap sync android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/app": "^7.1.2",
+    "@capacitor/core": "^7.6.9",
+    "@capacitor/splash-screen": "^7.0.5",
+    "@capacitor/status-bar": "^7.0.6",
     "@supabase/supabase-js": "^2.105.1",
     "@tailwindcss/vite": "^4.1.17",
     "cloudinary": "^2.10.0",
@@ -26,6 +34,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.6.9",
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -39,6 +49,7 @@
     "postcss": "^8.5.6",
     "rolldown": "^1.0.0-beta.54",
     "tailwindcss": "^4.1.17",
+    "typescript": "^7.0.2",
     "vite": "^7.2.4"
   }
 }
