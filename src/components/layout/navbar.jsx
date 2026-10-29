@@ -11,8 +11,8 @@ const NavButton = ({ type, currentType, label, onClick, isMobile = false }) => {
     
     // Desktop Styling
     const baseClasses = "px-3 py-2 font-bold text-[13px] lg:text-[14px] xl:text-[15px] transition-colors duration-200 cursor-pointer select-none whitespace-nowrap";
-    const activeClasses = "text-[#FFD700] border-b-2 border-[#FFD700]"; 
-    const inactiveClasses = "text-white hover:text-[#FFD700]";
+    const activeClasses = "text-[#f4d45c] border-b-2 border-[#f4d45c]"; 
+    const inactiveClasses = "text-white/90 hover:text-white";
 
     // Mobile Styling
     const mobileClasses = `block w-full text-left px-4 py-3 border-b border-green-800 ${isActive ? 'text-[#FFD700] bg-green-900' : 'text-white'}`;
@@ -103,16 +103,16 @@ const Navbar = ({ contentType, setContentType }) => {
     };
 
     return (
-        <div className="sticky top-0 w-full z-50 font-sans bg-[#004d00] shadow-md border-b-4 border-[#FFD700]">
+        <div className="sticky top-0 w-full z-50 font-sans bg-[#004d00] shadow-sm border-b-2 border-[#FFD700]">
             <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-8">
-                <div className="flex items-center justify-between h-20 md:h-24 gap-4">
+                <div className="flex items-center justify-between h-16 md:h-20 gap-4">
                     
                     {/* --- Logo Section --- */}
                     <div 
                         className="flex items-center cursor-pointer gap-3 shrink-0" 
                         onClick={() => handleNavClick('home')}
                     >
-                        <div className="w-10 h-10 md:w-14 md:h-14 bg-white rounded-full shrink-0 flex items-center justify-center border-2 border-[#FFD700] overflow-hidden p-0.5">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shrink-0 flex items-center justify-center border border-white/40 overflow-hidden p-0.5">
                             <img 
                                 src={logoImg} 
                                 alt="Logo" 
@@ -125,7 +125,7 @@ const Navbar = ({ contentType, setContentType }) => {
                             <span className="text-sm md:text-lg lg:text-xl font-bold text-white tracking-wide leading-tight uppercase whitespace-nowrap">
                                 Govt. Elementary College
                             </span>
-                            <span className="text-[10px] md:text-xs lg:text-sm text-[#FFD700] font-semibold tracking-wider uppercase whitespace-nowrap">
+                            <span className="text-[10px] md:text-xs lg:text-sm text-[#f4d45c] font-semibold tracking-wider uppercase whitespace-nowrap">
                                 Of Education (M/W) Mithi
                             </span>
                             <span className="text-[9px] text-gray-300 hidden sm:block whitespace-nowrap">
@@ -164,18 +164,18 @@ const Navbar = ({ contentType, setContentType }) => {
                                         onMouseEnter={() => handleDropdownHover(item.type, true)}
                                         onMouseLeave={() => handleDropdownHover(item.type, false)}
                                     >
-                                        <div className={`px-3 py-2 font-bold text-[13px] lg:text-[14px] xl:text-[15px] transition-colors duration-200 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 ${isParentActive ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-white hover:text-[#FFD700]'}`}>
+                                        <div className={`px-3 py-2 font-bold text-[13px] lg:text-[14px] xl:text-[15px] transition-colors duration-200 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 ${isParentActive ? 'text-[#f4d45c] border-b-2 border-[#f4d45c]' : 'text-white/90 hover:text-white'}`}>
                                             {item.label} 
                                             <span className={`text-[10px] transform transition-transform duration-150 ${dropdownStates[item.type] ? 'rotate-180' : ''}`}>▼</span>
                                         </div>
                                         
                                         {/* Dropdown Menu */}
                                         <div 
-                                                className={`absolute top-full ${item.type === 'portal-dropdown' ? 'right-0' : 'left-0'} mt-1 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-[#FFD700] border-b-4 border-b-[#FFD700] backdrop-blur-lg transition-opacity duration-200 ${dropdownStates[item.type] ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                                                className={`absolute top-full ${item.type === 'portal-dropdown' ? 'right-0' : 'left-0'} mt-1 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 backdrop-blur-lg transition-opacity duration-200 ${dropdownStates[item.type] ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
                                             onMouseEnter={() => handleDropdownHover(item.type, true)}
                                             onMouseLeave={() => handleDropdownHover(item.type, false)}
                                         >
-                                            <div className="bg-gradient-to-r from-[#004d00] to-[#006400] p-3 border-b border-[#FFD700]">
+                                            <div className="bg-[#004d00] p-3 border-b border-gray-200">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-8 h-8 bg-white rounded-full border border-[#FFD700] overflow-hidden p-0.5 shrink-0">
                                                         <img src={logoImg} alt="College logo" className="w-full h-full object-contain rounded-full" />

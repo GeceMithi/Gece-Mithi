@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --brand-green: #004d00;
-  --brand-green-2: #005a00;
-  --brand-yellow: #ffd200;
-  --brand-bg: #f7f7f7;
-  --brand-text: #000000;
-  --brand-muted: #6b7280;
+  --brand-green: #06452c;
+  --brand-green-2: #0b6240;
+  --brand-yellow: #f4d45c;
+    --brand-bg: #f5f7f5;
+    --brand-text: #1f2c24;
+    --brand-muted: #68766d;
 
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
+    color: var(--brand-green);
   color: var(--brand-text);
   background-color: var(--brand-bg);
 }
@@ -30,8 +30,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: var(--brand-bg);
-  color: #000000;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--brand-text);
+    font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 @page {

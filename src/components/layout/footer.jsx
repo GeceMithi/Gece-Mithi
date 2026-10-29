@@ -12,56 +12,52 @@ const Footer = ({ setContentType }) => {
     };
 
     return (
-        <footer className="bg-[#003d00] text-gray-300 py-10 mt-20 font-sans border-t-4 border-[#FFD700]">
-            <div className="max-w-screen-xl mx-auto px-6 lg:px-8">
+        <footer className="bg-[#004d00] text-gray-300 pt-10 pb-4 mt-14 font-sans border-t-2 border-[#FFD700]">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Responsive Grid: Quick links, GECE Mithi, aur Map */}
+                <div className="grid grid-cols-1 md:grid-cols-[180px_auto_350px] lg:grid-cols-[200px_1fr_400px] gap-8 md:gap-x-12 mb-8 items-start">
                     
-                    {/* Column 1: Quick Links (Manual + Working Logic) */}
-                    <div>
-                        <h3 className="text-[#FFD700] text-xl font-bold mb-6 uppercase tracking-wider">Quick Links</h3>
-                        <ul className="space-y-3 text-[15px]">
+                    {/* Column 1: Quick Links */}
+                    <div className="w-fit">
+                        <h3 className="text-[#FFD700] text-[22px] font-bold mb-5 uppercase tracking-wider">Quick Links</h3>
+                        <ul className="space-y-3 text-base">
                             
-                            {/* Link 1: Home */}
                             <li 
                                 onClick={() => handleLinkClick('home')}
-                                className="hover:text-white hover:translate-x-2 transition-all duration-300 group flex items-center w-fit cursor-pointer"
+                                className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center w-fit cursor-pointer"
                             >
                                 <span className="text-[#FFD700] mr-2 text-xs">➤</span>
                                 Home
                             </li>
 
-                            {/* Link 2: About GECE */}
                             <li 
                                 onClick={() => handleLinkClick('about')}
-                                className="hover:text-white hover:translate-x-2 transition-all duration-300 group flex items-center w-fit cursor-pointer"
+                                className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center w-fit cursor-pointer"
                             >
                                 <span className="text-[#FFD700] mr-2 text-xs">➤</span>
                                 About GECE
                             </li>
 
-                            {/* Link 3: Our Team (Ye bhi About section mein hi hai) */}
                             <li 
                                 onClick={() => handleLinkClick('outline')}
-                                className="hover:text-white hover:translate-x-2 transition-all duration-300 group flex items-center w-fit cursor-pointer"
+                                className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center w-fit cursor-pointer"
                             >
                                 <span className="text-[#FFD700] mr-2 text-xs">➤</span>
                                 Outlines
                             </li>
 
-                            {/* Link 4: Notes */}
                             <li 
                                 onClick={() => handleLinkClick('notes')}
-                                className="hover:text-white hover:translate-x-2 transition-all duration-300 group flex items-center w-fit cursor-pointer"
+                                className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center w-fit cursor-pointer"
                             >
                                 <span className="text-[#FFD700] mr-2 text-xs">➤</span>
                                 Notes
                             </li>
 
-                            {/* Link 5: Contact Us */}
                             <li 
                                 onClick={() => handleLinkClick('contact')}
-                                className="hover:text-white hover:translate-x-2 transition-all duration-300 group flex items-center w-fit cursor-pointer"
+                                className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center w-fit cursor-pointer"
                             >
                                 <span className="text-[#FFD700] mr-2 text-xs">➤</span>
                                 Contact Us
@@ -70,33 +66,62 @@ const Footer = ({ setContentType }) => {
                         </ul>
                     </div>
 
-                    {/* Column 2: Contact Info */}
-                    <div>
-                        <h3 className="text-[#FFD700] text-xl font-bold mb-6 uppercase tracking-wider">GECE Mithi</h3>
-                        <div className="space-y-4 text-[15px] text-white">
-                            <div className="flex items-start">
-                                <span className="text-[#FFD700] mr-3 mt-1 text-lg">📍</span>
+                    {/* Column 2: Contact Info (GECE Mithi) */}
+                    <div className="max-w-md">
+                        <h3 className="text-[#FFD700] text-[22px] font-bold mb-5 uppercase tracking-wider">GECE Mithi</h3>
+                        <div className="space-y-3.5 text-base">
+                            
+                            {/* Address */}
+                            <div className="flex items-start text-white">
+                                <span className="text-red-500 mr-2.5 text-base select-none">📍</span>
                                 <span>Govt. Elementary College of Education (M/W), Mithi, Tharparkar.</span>
                             </div>
+                            
+                            {/* Phone */}
                             <div className="flex items-start">
-                                <span className="text-[#FFD700] mr-3 mt-1 text-lg">📞</span>
-                                <a href="tel:+923313708015" className="!text-white hover:!text-white hover:underline">Principal: <span   className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:text-white" >+92-331-3708015</span></a>
+                                <span className="mr-2.5 text-base select-none">📞</span>
+                                <div className="text-white">
+                                    Principal:{' '}
+                                    <a 
+                                        href="tel:+923313708015" 
+                                        style={{ color: '#FFD700' }} 
+                                        className="font-bold hover:underline hover:!text-[#FFF] break-all transition-colors ml-1"
+                                    >
+                                        +92-331-3708015
+                                    </a>
+                                </div>
                             </div>
+                            
+                            {/* Email */}
                             <div className="flex items-start">
-                                <span className="text-[#FFD700] mr-3 mt-1 text-lg">📞</span>
-                                <a href="tel:+923361121841" className="!text-white hover:!text-white hover:underline">Web Developer: <span className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:text-white">+92-336-1121841</span></a>
+                                <span className="mr-2.5 text-base select-none">✉️</span>
+                                <a 
+                                    href="mailto:gecemithiedu@gmail.com"
+                                    style={{ color: '#FFD700' }} 
+                                    className="hover:underline hover:!text-[#FFF] break-all transition-colors"
+                                >
+                                    gecemithiedu@gmail.com
+                                </a>
                             </div>
-                            <div className="flex items-start">
-                                <span className="text-[#FFD700] mr-3 mt-1 text-lg">✉️</span>
-                                <a href="mailto:gecemithiedu@gmail.com" className="!text-white hover:!text-white hover:underline break-all">gecemithiedu@gmail.com</a>
-                            </div>
+
                         </div>
+                    </div>
+
+                    {/* Column 3: Google Map */}
+                    <div className="w-full h-[280px] md:h-[273px] lg:w-[min(456px,38vw)]">
+                        <iframe
+                            title="Map to Govt. Elementary College of Education (M/W), Mithi"
+                            src="https://www.google.com/maps?q=Govt.%20Elementary%20College%20of%20Education%20Mithi%20Tharparkar&output=embed"
+                            className="w-full h-full border border-[#FFD700] rounded-none block"
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
                     </div>
 
                 </div>
 
                 {/* Bottom Copyright */}
-                <div className="pt-8 border-t border-green-800 text-center text-sm md:text-md lg:text-md font">
+                <div className="pt-4 border-t border-green-800 text-center text-xs md:text-sm text-gray-200">
                     <p>
                         Copyright ©2025 All rights reserved | Designed & Developed by 
                         <span 
@@ -104,12 +129,13 @@ const Footer = ({ setContentType }) => {
                                 const developerUrl = window.location.origin + '/?content=developer';
                                 window.open(developerUrl, '_blank');
                             }}
-                            className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:text-white"
+                            className="text-[#FFD700] font-bold ml-1 cursor-pointer hover:underline"
                         >
                             SANDESH KHEMANI SUTHER
                         </span>
                     </p>
                 </div>
+
             </div>
         </footer>
     );

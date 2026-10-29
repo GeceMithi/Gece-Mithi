@@ -177,7 +177,7 @@ const Home = () => {
                                 
                                 {/* Main Slider Container */}
                                 <div
-                                    className="relative rounded-xl overflow-hidden shadow-lg border-4 border-[#FFD700] bg-gray-200"
+                                    className="relative rounded-t-xl overflow-hidden shadow-lg border-4 border-b-0 border-[#FFD700] bg-gray-200"
                                     style={{
                                         height: `${sliderHeights.base}px`,
                                     }}
@@ -188,7 +188,7 @@ const Home = () => {
                                         @media (min-width: 1024px) { #slider-image-box { height: ${sliderHeights.lg}px !important; } }
                                         @media (min-width: 1280px) { #slider-image-box { height: ${sliderHeights.xl}px !important; } }
                                     `}</style>
-                                    <div className="absolute inset-0 border-4 border-[#004d00] rounded-xl pointer-events-none"></div>
+                                    <div className="absolute inset-0 border-4 border-b-0 border-[#004d00] rounded-t-xl pointer-events-none"></div>
                                     
                                     {aboutSliderImages.map((slide, index) => (
                                         <div 
@@ -202,15 +202,9 @@ const Home = () => {
                                                 src={convertDriveLink(slide.image)} 
                                                 alt={slide.heading} 
                                                 loading="eager"
-                                                className="w-full h-full object-fit" 
+                                                className="w-full h-full object-cover object-center" 
                                             />
                                             
-                                            {/* Caption */}
-                                            <div className="absolute bottom-3 left-3 right-3 bg-[#004d00] border-2 border-[#ffd200] rounded-lg p-2 backdrop-blur-sm">
-                                                <p className="text-white text-md md:text-sm font-bold text-center tracking-wide">
-                                                    {slide.heading}
-                                                </p>
-                                            </div>
                                         </div>
                                     ))}
 
@@ -221,6 +215,13 @@ const Home = () => {
                                     )}
 
                                 </div>
+                                {aboutSliderImages[currentSlide] && (
+                                    <div className="bg-[#004d00] border-4 border-t-0 border-[#ffd200] rounded-b-xl px-3 py-2">
+                                        <p className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold text-center leading-snug break-words tracking-wide">
+                                            {aboutSliderImages[currentSlide].heading}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -345,7 +346,7 @@ const Home = () => {
                                             {notice.imageUrl && resolveImageUrl(notice.imageUrl) && (
                                                 <div className="mt-3 rounded-xl overflow-hidden border border-[#ffd200] bg-white shadow-sm">
                                                     <div className="p-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                                        <span className="text-xs text-gray-500">Image attached to notice</span>
+                                                        <span className="text-xs text-gray-500">For More Details</span>
                                                         <div className="flex flex-wrap items-center gap-2">
                                                             <button
                                                                 onClick={() => downloadImage(notice.imageUrl)}

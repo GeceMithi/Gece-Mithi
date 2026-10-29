@@ -1,92 +1,114 @@
-import React from 'react';
-import { ArrowUpRight, Code2, Database, ExternalLink, Layers3, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import profileImg from '../../assets/developer/profile1.jpg';
+import HomeSection from './developer/HomeSection';
+import SkillsSection from './developer/SkillsSection';
+import ResumeSection from './developer/ResumeSection';
+import ContactSection from './developer/ContactSection';
 
-const skills = ['React.js', 'JavaScript', 'Node.js', 'Firebase', 'MongoDB', 'Tailwind CSS', 'Cloudinary'];
-
-const services = [
-    { icon: Code2, title: 'Web Applications', description: 'Fast, focused interfaces that turn complex workflows into simple digital products.' },
-    { icon: Layers3, title: 'Responsive Design', description: 'Thoughtful layouts that feel natural on phones, tablets and large screens.' },
-    { icon: Database, title: 'Data & Cloud', description: 'Reliable Firebase, media and content systems built for real-world teams.' },
+const navLinks = [
+  { id: 'home', icon: 'fa-home', label: 'HOME' },
+  { id: 'skills', icon: 'fa-user', label: 'SKILLS' },
+  { id: 'resume', icon: 'fa-file', label: 'RESUME' },
+  { id: 'contact', icon: 'fa-envelope', label: 'CONTACT' },
 ];
 
-const Developer = () => {
-    return (
-        <div className="relative -mx-4 -my-4 overflow-hidden bg-[#071b14] text-white md:-mx-8 md:-my-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,rgba(255,210,0,0.18),transparent_30%),radial-gradient(circle_at_10%_80%,rgba(0,110,70,0.38),transparent_32%)]" />
-            <div className="relative mx-auto max-w-6xl px-5 py-8 sm:px-8 md:py-14">
-                <nav className="mb-16 flex items-center justify-between border-b border-white/10 pb-5 text-sm">
-                    <span className="font-bold tracking-[0.2em] text-[#ffd200]">SKS / 2025</span>
-                    <span className="text-white/55">Independent web developer</span>
-                </nav>
-
-                <section className="grid items-end gap-10 lg:grid-cols-[1.25fr_0.75fr]">
-                    <div>
-                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ffd200]/35 bg-[#ffd200]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#ffd200]">
-                            <Sparkles size={14} /> Available for meaningful projects
-                        </div>
-                        <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl">
-                            Sandesh Khemani <span className="text-[#ffd200]">Suther.</span>
-                        </h1>
-                        <p className="mt-7 max-w-2xl text-lg leading-8 text-white/70 sm:text-xl">
-                            Full-stack web developer creating useful, polished digital experiences for education, businesses and ambitious ideas.
-                        </p>
-                        <div className="mt-9 flex flex-wrap gap-3">
-                            <a href="mailto:gecemithiedu@gmail.com" className="inline-flex items-center gap-2 rounded-lg bg-[#ffd200] px-5 py-3 font-bold text-[#071b14] transition hover:bg-white">
-                                Start a conversation <ArrowUpRight size={18} />
-                            </a>
-                            <a href="https://sandeshkhemani.vercel.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 font-bold text-white transition hover:border-[#ffd200] hover:text-[#ffd200]">
-                                View website <ExternalLink size={17} />
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="border-l border-[#ffd200]/50 pl-6 lg:mb-2">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffd200]">The approach</p>
-                        <p className="mt-4 text-2xl font-semibold leading-tight">Build clearly. Design intentionally. Ship with care.</p>
-                        <p className="mt-5 text-sm leading-6 text-white/55">Based in Mithi, Tharparkar, Sindh, Pakistan.</p>
-                    </div>
-                </section>
-
-                <section className="mt-20 grid gap-4 border-y border-white/10 py-7 sm:grid-cols-3">
-                    <div><p className="text-3xl font-black text-[#ffd200]">04+</p><p className="mt-1 text-sm text-white/55">Years building for the web</p></div>
-                    <div><p className="text-3xl font-black text-[#ffd200]">07</p><p className="mt-1 text-sm text-white/55">Core technologies in practice</p></div>
-                    <div><p className="text-3xl font-black text-[#ffd200]">01</p><p className="mt-1 text-sm text-white/55">Purpose: useful digital work</p></div>
-                </section>
-
-                <section className="mt-16 grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
-                    <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffd200]">Capabilities</p>
-                        <h2 className="mt-3 text-3xl font-bold">A practical stack for ambitious work.</h2>
-                        <p className="mt-4 leading-7 text-white/60">From the first wireframe to a stable production system, every detail has a job.</p>
-                        <div className="mt-7 flex flex-wrap gap-2">
-                            {skills.map((skill) => <span key={skill} className="rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/80">{skill}</span>)}
-                        </div>
-                    </div>
-                    <div className="grid gap-4 md:grid-cols-3">
-                        {services.map((service) => (
-                            <article key={service.title} className="border border-white/10 bg-white/[0.06] p-5 transition hover:-translate-y-1 hover:border-[#ffd200]/60">
-                                {React.createElement(service.icon, { className: 'text-[#ffd200]', size: 25 })}
-                                <h3 className="mt-8 text-lg font-bold">{service.title}</h3>
-                                <p className="mt-3 text-sm leading-6 text-white/55">{service.description}</p>
-                            </article>
-                        ))}
-                    </div>
-                </section>
-
-                <section className="mt-16 flex flex-col gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ffd200]">Let&apos;s connect</p>
-                        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">
-                            <a href="tel:+923361121841" className="inline-flex items-center gap-2 text-[#ffd200] hover:text-[#ffd200]"><Phone size={16} /> +92-336-1121841</a>
-                            <a href="mailto:gecemithiedu@gmail.com" className="inline-flex items-center gap-2 text-[#ffd200] hover:text-[#ffd200]"><Mail size={16} /> gecemithiedu@gmail.com</a>
-                            <span className="inline-flex items-center gap-2"><MapPin size={16} /> Mithi, Pakistan</span>
-                        </div>
-                    </div>
-                    <button onClick={() => window.history.back()} className="self-start rounded-lg border border-white/20 px-4 py-2 text-sm font-bold text-white/75 transition hover:border-[#ffd200] hover:text-[#ffd200]">Back to website</button>
-                </section>
-            </div>
-        </div>
-    );
+const sectionComponents = {
+  home: HomeSection,
+  skills: SkillsSection,
+  resume: ResumeSection,
+  contact: ContactSection,
 };
 
-export default Developer;
+export default function Developer() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
+  const ActiveSection = sectionComponents[activeSection];
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    setIsSidebarOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 min-h-screen selection:bg-pink-500 selection:text-white overflow-x-hidden w-full relative">
+      <button
+        type="button"
+        aria-label={isSidebarOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        aria-expanded={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="md:hidden fixed top-4 right-4 z-[60] bg-slate-950 text-white w-12 h-12 rounded-full border-2 border-pink-400 shadow-[0_0_0_3px_rgba(15,23,42,0.8),0_0_22px_rgba(219,39,119,0.75)] flex items-center justify-center hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-pink-300/70 transition-transform"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          className="h-6 w-6"
+        >
+          {isSidebarOpen ? (
+            <path d="M6 6l12 12M18 6L6 18" />
+          ) : (
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 grid h-screen max-h-screen w-72 grid-rows-[auto_1fr_auto] overflow-hidden border-r border-indigo-400/30 bg-[#070b19] shadow-[8px_0_30px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center pt-5 pb-3 px-5 text-center">
+          <div className="relative mb-3 inline-block">
+            <div className="relative h-32 w-32 rounded-full p-1 bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 shadow-[0_0_25px_rgba(168,85,247,0.4)]">
+              <img
+                src={profileImg}
+                alt="Profile"
+                className="h-full w-full rounded-full border-2 border-[#070b19] object-cover"
+              />
+              <span className="absolute bottom-1 right-2 h-4 w-4 rounded-full border-2 border-[#070b19] bg-emerald-400"></span>
+            </div>
+          </div>
+          <h1 className="text-xl font-black tracking-wider text-white">
+            SANDESH <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-violet-400">KHEMANI SUTHER</span>
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm font-semibold tracking-wide text-indigo-300">
+            Full-Stack Web Developer
+          </p>
+        </div>
+
+        <nav aria-label="Developer sections" className="flex flex-col justify-center gap-4 sm:gap-5 px-6 py-2">
+          {navLinks.map((link) => (
+            <button
+              key={link.id}
+              type="button"
+              onClick={() => handleSectionChange(link.id)}
+              aria-current={activeSection === link.id ? 'page' : undefined}
+              className={`flex h-11 items-center justify-center gap-3 rounded-xl border text-sm font-bold tracking-widest transition-all duration-200 ${
+                activeSection === link.id
+                  ? 'border-violet-400/70 bg-gradient-to-r from-pink-500/25 via-purple-500/25 to-violet-600/35 text-white shadow-[0_0_18px_rgba(219,39,119,0.35)]'
+                  : 'border-indigo-400/30 bg-slate-900/50 text-white/90 hover:border-indigo-400/70 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <i className={`fa ${link.icon} text-base shrink-0 text-white`}></i>
+              <span className="text-white">{link.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <footer className="border-t border-indigo-400/20 bg-slate-950/60 py-3 px-4 text-center">
+          <p className="text-xs font-semibold text-indigo-200/70">
+            &copy; 2026 SANDESH KHEMANI SUTHER<br />All Rights Reserved.
+          </p>
+        </footer>
+      </aside>
+
+      <main className="md:ml-72 relative w-full md:w-[calc(100%-18rem)] overflow-hidden">
+        <ActiveSection key={activeSection} />
+      </main>
+    </div>
+  );
+}

@@ -78,21 +78,18 @@ const pageTitles = {
 
 export default function App() {
     useSecurity();
-    const [contentType, setContentType] = useState('home');
+    const [contentType, setContentType] = useState(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const contentParam = urlParams.get('content');
+
+        if (contentParam === 'developer') return 'developer';
+        if (contentParam === 'admission' || urlParams.get('printApplication') === '1') return 'admission';
+        return 'home';
+    });
 
     useEffect(() => {
         document.title = `${pageTitles[contentType] || 'Home'} | GECE Mithi`;
     }, [contentType]);
-
-    // Handle URL parameter for developer page
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const contentParam = urlParams.get('content');
-        if (contentParam === 'developer' || contentParam === 'admission' || urlParams.get('printApplication') === '1') {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setContentType(contentParam === 'developer' ? 'developer' : 'admission');
-        }
-    }, []);
 
     // Content Switcher Logic
     const renderContent = () => {
@@ -120,6 +117,8 @@ export default function App() {
             default: return <Home setContentType={setContentType} />;
         }
     };
+
+    if (contentType === 'developer') return <Developer />;
     
     return (
         <ToastProvider>
